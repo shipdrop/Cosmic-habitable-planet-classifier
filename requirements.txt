@@ -1,6 +1,5 @@
-streamlit
+fastapi
 pandas
 requests
-streamlit
 scikit-learn
-plotly
+uvicorn

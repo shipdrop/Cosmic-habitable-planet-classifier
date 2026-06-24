@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Classifier</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #0f172a; color: white; padding: 40px; }
+        .container { max-width: 600px; margin: 0 auto; background: #1e293b; padding: 20px; border-radius: 8px; }
+        .slider-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="range"] { width: 100%; }
+        button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; font-size: 18px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🪐 Cosmic Habitable Zone Classifier</h2>
+    <p>Adjust the attributes to design an exoplanet:</p>
+
+    <div class="slider-group">
+        <label>Planet Mass: <span id="massVal">1.0</span> Earth Masses</label>
+        <input type="range" id="mass" min="0.1" max="50" step="0.1" value="1" oninput="document.getElementById('massVal').innerText = this.value">
+    </div>
+
+    <div class="slider-group">
+        <label>Planet Radius: <span id="radVal">1.0</span> Earth Radii</label>
+        <input type="range" id="radius" min="0.1" max="20" step="0.1" value="1" oninput="document.getElementById('radVal').innerText = this.value">
+    </div>
+
+    <div class="slider-group">
+        <label>Orbital Period: <span id="perVal">365</span> Days</label>
+        <input type="range" id="period" min="1" max="1000" step="1" value="365" oninput="document.getElementById('perVal').innerText = this.value">
+    </div>
+
+    <div class="slider-group">
+        <label>Star Temperature: <span id="tempVal">5778</span> Kelvin</label>
+        <input type="range" id="star_temp" min="2000" max="10000" step="100" value="5778" oninput="document.getElementById('tempVal').innerText = this.value">
+    </div>
+
+    <button onclick="sendPrediction()">Analyze Planet</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    async function sendPrediction() {
+        const payload = {
+            mass: parseFloat(document.getElementById('mass').value),
+            radius: parseFloat(document.getElementById('radius').value),
+            period: parseFloat(document.getElementById('period').value),
+            star_temp: parseFloat(document.getElementById('star_temp').value)
+        };
+
+        // Replace this URL with your live API URL once deployed to Render or HuggingFace
+        const apiUrl = "http://127.0.0.1:8000/predict"; 
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = "block";
+            resultDiv.innerHTML = `<strong>Result:</strong> ${data.prediction}`;
+            
+            if(data.prediction === "Habitable Candidate") resultDiv.style.background = "#047857";
+            else if(data.prediction === "Gas Giant") resultDiv.style.background = "#b45309";
+            else resultDiv.style.background = "#1d4ed8";
+
+        } catch (error) {
+            console.error("Error communicating with the API:", error);
+        }
+    }
+</script>
+</body>
+</html>
