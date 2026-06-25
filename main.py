@@ -36,7 +36,7 @@ def home():
 @app.post("/predict")
 def get_prediction(data: PlanetData):
     prediction, probabilities = predict_custom_planet(
-      model, feature_cols, data.mass, data.radius, data.period, data.star_temp
+      model, feature_cols, data.pl_bmasse, data.pl_rade, data.pl_orbper, data.st_teff
     )
 
     #format the breakdom

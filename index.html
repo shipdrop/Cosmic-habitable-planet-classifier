@@ -48,10 +48,10 @@
 <script>
     async function sendPrediction() {
         const payload = {
-            mass: parseFloat(document.getElementById('mass').value),
-            radius: parseFloat(document.getElementById('radius').value),
-            period: parseFloat(document.getElementById('period').value),
-            star_temp: parseFloat(document.getElementById('star_temp').value)
+            pl_bmasse: parseFloat(document.getElementById('mass').value),
+            pl_rade: parseFloat(document.getElementById('radius').value),
+            pl_orbper: parseFloat(document.getElementById('period').value),
+            st_teff: parseFloat(document.getElementById('star_temp').value)
         };
 
         // Replace this URL with your live API URL once deployed to Render or HuggingFace
