@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from model_trainer import predict_custom_planet, train_exoplanet_model
 from pydantic import BaseModel
 
+from data_loader import fetch_nasa_data, engineer_features
+
 app = FastAPI()
 
 #Talk to API from any origin
