@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from model_trainer import predict_custom_planet, train_exoplanet_model
 from pydantic import BaseModel
@@ -41,7 +42,7 @@ def get_prediction(data: PlanetData):
     #format the breakdom
     confidence = {cls: float(prob) for cls, prob in zip(model.classes_, probabilities)}
 
-    return {
+    return JSONResponse(content={
         "prediction": prediction,
         "confidence": confidence
-    }
+    })
