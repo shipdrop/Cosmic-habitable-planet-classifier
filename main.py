@@ -21,7 +21,17 @@ app.add_middleware(
 
 #load data
 feature_cols = ['pl_bmasse', 'pl_rade', 'pl_orbper', 'st_teff']
-model = joblib.load("model.joblib")
+MODEL_FILE = "model.joblib"
+
+if not os.path.exists(MODEL_FILE):
+    print(f" {MODEL_FILE} not found. training model automatically in the cloud...")
+    try:
+        train_exoplanet_model()
+        print(f" Model trained successfully")
+    except Exception as e:
+        print(f" Error training model: {e}")
+
+model = joblib.load(MODEL_FILE)
 
 #Recieve from frontend
 class PlanetData(BaseModel):
