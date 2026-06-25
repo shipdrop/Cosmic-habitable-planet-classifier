@@ -1,6 +1,7 @@
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
+import joblib
 
 def train_exoplanet_model(df):
     """Trains a Random Forest Classifier on the processed NASA data."""
