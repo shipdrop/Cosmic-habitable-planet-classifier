@@ -2,4 +2,5 @@ fastapi
 pandas
 requests
 scikit-learn
-uvicorn
+uvicorn[standard]
+joblib

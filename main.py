@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from model_trainer import predict_custom_planet, train_exoplanet_model
 from pydantic import BaseModel
+import joblib
 
 from data_loader import fetch_nasa_data, engineer_features
 
@@ -20,7 +21,7 @@ app.add_middleware(
 #load data
 df = engineer_features(fetch_nasa_data())
 feature_cols = ['pl_bmasse', 'pl_rade', 'pl_orbper', 'st_teff']
-model = train_exoplanet_model(df)
+model = joblib.load("model.joblib")
 
 #Recieve from frontend
 class PlanetData(BaseModel):
