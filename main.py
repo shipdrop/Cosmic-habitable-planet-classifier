@@ -6,8 +6,6 @@ from pydantic import BaseModel
 import joblib
 import os
 
-from data_loader import fetch_nasa_data, engineer_features
-
 app = FastAPI()
 
 #Talk to API from any origin
@@ -26,7 +24,14 @@ MODEL_FILE = "model.joblib"
 if not os.path.exists(MODEL_FILE):
     print(f" {MODEL_FILE} not found. training model automatically in the cloud...")
     try:
-        train_exoplanet_model()
+        from data_loader import fetch_nasa_data, engineer_features
+        
+        print(f" Fetching NASA data...")
+        raw_data = fetch_nasa_data()
+        print(f" Engineering features...")
+        processed_df = engineer_features(raw_data)
+        print(f" Training model...")
+        trained_exoplanet_model(processed_df)
         print(f" Model trained successfully")
     except Exception as e:
         print(f" Error training model: {e}")
