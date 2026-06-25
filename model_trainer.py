@@ -2,6 +2,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 import joblib
+import os
+
 
 def train_exoplanet_model(df):
     """Trains a Random Forest Classifier on the processed NASA data."""
@@ -12,7 +14,12 @@ def train_exoplanet_model(df):
     
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
-    return model
+    
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(base_dir, "model.joblib")
+
+    print(f"Saving model to {model_path}")
+    joblib.dump(model, model_path)
 
 def predict_custom_planet(model, features, mass, radius, period, star_temp):
     """Predicts the category of a user-defined planet configuration."""

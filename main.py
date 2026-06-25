@@ -21,6 +21,9 @@ app.add_middleware(
 feature_cols = ['pl_bmasse', 'pl_rade', 'pl_orbper', 'st_teff']
 MODEL_FILE = "model.joblib"
 
+base_dir = os.path.dirname(os.path.abspath(__file__))
+MODEL_FILE = os.path.join(base_dir, "model.joblib")
+
 if not os.path.exists(MODEL_FILE):
     print(f" {MODEL_FILE} not found. training model automatically in the cloud...")
     try:
