@@ -1,43 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cosmic Classifier</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #0f172a; color: white; padding: 40px; }
-        .container { max-width: 600px; margin: 0 auto; background: #1e293b; padding: 20px; border-radius: 8px; }
-        .slider-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="range"] { width: 100%; }
-        button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
-        #result { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; font-size: 18px; text-align: center; }
+        body {
+            background-color: #0d0d11;
+            font-family: 'Space Grotesk', sans-serif;
+            color: #ffffff;
+            background-image: radial-gradient(rgba(230, 0, 38, 0.15) 15%, transparent 16%),
+                              radial-gradient(rgba(0, 240, 255, 0.15) 15%, transparent 16%);
+            background-size: 12px 12px;
+            background-position: 0 0, 6px 6px; /* retro halftone effect */
+
+        }
+
+        /* comic book panel effect */
+        .panel {
+            background-color: #141419;
+            border: 4px solid #ffffff;
+            box-shadow: 8px 8px 0px #e60026; /* comic book shadow effect */
+            border-radius: 0px;
+            transform: rotate(-0.5deg); /* tilt */
+            transition: transform 0.2s ease;
+        }
+        
+        .panel:hover {
+            transform: rotate(0.5deg) scale(1.01);
+        }
+
+        /* spider-verse type Titles */
+        h1, h2 {
+            font-family: 'bangers', cursive;
+            letter-spacing: 2px;
+            color: #ffe600;
+            text-shadow: 3px 3px 0px #e60026, -1px 1px 0px #000;
+        }
+
+        /* slider and input styles */
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: #252530;
+            border: 2px solid #ffffff;
+            height: 12px;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb { 
+            -webkit-apperance: none;
+            width: 24px;
+            height: 24px;
+            background: #e60026;
+            border: 2px solid #ffffff;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        /* Action Button */
+        button {
+            font-family: "Permanent Marker", cursive;
+            font-size: 1.5em;
+            background: #e60026;
+            color: white;
+            border: 3px solid #ffffff;
+            padding: 10px 20px;
+            box-shadow: 5px 5px 0px #00f0ff;
+            cursor: pointer;
+        }
+
+        button.active {
+            transform: transtlate(3px, 3px);
+            box-shadow: 2px 2px 0px #00f0ff;
+        }
+
+        /* prediction result box */
+        .prediction-badge {
+            font-family: 'bangers', cursive;
+            font-size: 2.5rem;
+            color: #00f0ff;
+            text-align: center;
+            background: #000000;
+            border: 3px dashed #e60026;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🪐 Cosmic Habitable Zone Classifier</h2>
-    <p>Adjust the attributes to design an exoplanet:</p>
-
-    <div class="slider-group">
-        <label>Planet Mass: <span id="massVal">1.0</span> Earth Masses</label>
-        <input type="range" id="mass" min="0.1" max="50" step="0.1" value="1" oninput="document.getElementById('massVal').innerText = this.value">
+<div class="container" style="max-width: 600px; margin: 40px auto; padding: 20px;">
+    
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="font-size: 4rem; margin: 0;">COSMIC CLASSIFIER</h1>
+        <p style="color: #00f0ff; font-weight: bold; text-transform: uppercase;">Miles Morales Edition // Target API Online</p>
     </div>
 
-    <div class="slider-group">
-        <label>Planet Radius: <span id="radVal">1.0</span> Earth Radii</label>
-        <input type="range" id="radius" min="0.1" max="20" step="0.1" value="1" oninput="document.getElementById('radVal').innerText = this.value">
+    <div class="panel" style="padding: 30px; margin-bottom: 20px;">
+        <h2 style="font-size: 2rem; margin-top: 0;">Configure Exoplanet Metrics</h2>
+        
+        <div style="margin-bottom: 20px;">
+            <label style="display:block; font-weight:bold; margin-bottom:5px; text-transform:uppercase;">Planet Mass (Earths)</label>
+            <input type="range" min="0.1" max="50" step="0.1" style="width: 100%;">
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <button id="predict-btn" style="width: 100%;">RUN ANALYSIS</button>
+        </div>
     </div>
 
-    <div class="slider-group">
-        <label>Orbital Period: <span id="perVal">365</span> Days</label>
-        <input type="range" id="period" min="1" max="1000" step="1" value="365" oninput="document.getElementById('perVal').innerText = this.value">
-    </div>
-
-    <div class="slider-group">
-        <label>Star Temperature: <span id="tempVal">5778</span> Kelvin</label>
-        <input type="range" id="star_temp" min="2000" max="10000" step="100" value="5778" oninput="document.getElementById('tempVal').innerText = this.value">
+    <div class="panel" id="result-panel" style="padding: 25px; background: #000; display: none;">
+        <h2 style="margin: 0; font-size: 1.8rem; color: #fff;">ANALYSIS COMPLETE:</h2>
+        <div class="prediction-badge" id="prediction-text">SUPER-EARTH</div>
     </div>
 
     <button onclick="sendPrediction()">Analyze Planet</button>
