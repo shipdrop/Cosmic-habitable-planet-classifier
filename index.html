@@ -170,6 +170,7 @@
 
         // Replace this URL with your live API URL once deployed to Render or HuggingFace
         const apiUrl = "https://rikimii-exoplanet-api.hf.space/predict"; 
+        const resultDiv = document.getElementById('result');
 
         try {
             const response = await fetch(apiUrl, {
@@ -177,20 +178,31 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
+
+            if (!response.ok) {
+                throw new Error(`Server returned status: ${response.status}`);
+            }
+
             const data = await response.json();
             
-            const resultDiv = document.getElementById('result');
             resultDiv.style.display = "block";
             resultDiv.innerHTML = `<strong>Result:</strong> ${data.prediction}`;
             
-            if(data.prediction === "Habitable Candidate") resultDiv.style.background = "#047857";
-            else if(data.prediction === "Gas Giant") resultDiv.style.background = "#b45309";
-            else resultDiv.style.background = "#1d4ed8";
-
-        } catch (error) {
-            console.error("Error communicating with the API:", error);
+           if (data.prediction === "Habitable Candidate") {
+            resultDiv.style.background = "#047857"; // Spider-Bot Green
+        } else if (data.prediction === "Gas Giant") {
+            resultDiv.style.background = "#b45309"; // Giant Orange
+        } else {
+            resultDiv.style.background = "#1d4ed8"; // Deep Space Blue
         }
-    }
+        
+
+    } catch (error) {
+        console.error("Error communicating with the API:", error);
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = `<strong>⚠️ EXOPLANET FEED OFFLINE</strong><br><span style="font-size:0.9rem;">The mainframe is waking up or training in the cloud. Please try again in a minute!</span>`;
+        resultDiv.style.background = "#e60026"; // red background for error
+    }}        
 
     // visualization update for the customized planet //
     function updateVisualization() {
