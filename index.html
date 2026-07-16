@@ -127,36 +127,59 @@
 
     <div style="display: flex; flex-direction: column; gap: 30px;">
         
-        <div class="panel" style="padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; align-items: center; background: #000; border-color: #00f0ff; box-shadow: 8px 8px 0px #00f0ff; min-height: 500px; justify-content: flex-start;">
+       <div class="panel" style="padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; align-items: center; background: #000; border-color: #00f0ff; box-shadow: 8px 8px 0px #00f0ff; min-height: 550px; justify-content: flex-start;">
     
-        <h2 style="font-size: 1.8rem; margin-top: 0; margin-bottom: 20px; color: #fff; letter-spacing: 2px;">SCANNING TARGET...</h2>
+    <h2 style="font-size: 1.8rem; margin-top: 0; margin-bottom: 20px; color: #fff; letter-spacing: 2px;">SCANNING TARGET...</h2>
     
-            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; width: 100%;">
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; width: 100%;">
         
-                <div id="planet-visual-container" style="display: flex; justify-content: center; align-items: center; position: relative; min-height: 220px;">
-                    <div id="planet-sprite" style="
-                        width: 100px; 
-                        height: 100px; 
-                        background-color: #00f0ff; 
-                        border-radius: 50%; 
-                        border: 4px solid #fff;
-                        box-shadow: 0 0 30px #00f0ff, inset 0 0 20px rgba(0,0,0,0.6);
-                        z-index: 2;
-                        transition: background-color 0.6s ease-in-out, box-shadow 0.6s ease-in-out, width 0.15s ease-out, height 0.15s ease-out;
-                        aspect-ratio: 1 / 1;
-                        box-sizing: border-box;
-                    "></div>
-                </div>
+        <div id="planet-visual-container" style="display: flex; justify-content: center; align-items: flex-end; gap: 40px; min-height: 220px; width: 100%; padding-bottom: 10px;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <div id="earth-sprite" style="width: 50px; height: 50px; background: radial-gradient(circle, #2563eb, #1d4ed8); border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 15px rgba(29, 78, 216, 0.5), inset 0 0 10px rgba(0,0,0,0.6); aspect-ratio: 1/1; box-sizing: border-box;"></div>
+                <span style="font-family: 'Space Grotesk', sans-serif; font-size: 0.8rem; color: #a1a1aa; text-transform: uppercase; font-weight: bold;">Earth (1.0x)</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <div id="planet-sprite" style="width: 75px; height: 75px; background-color: #00f0ff; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 0 30px #00f0ff, inset 0 0 20px rgba(0,0,0,0.6); z-index: 2; transition: background-color 0.6s ease-in-out, box-shadow 0.6s ease-in-out, width 0.15s ease-out, height 0.15s ease-out; aspect-ratio: 1/1; box-sizing: border-box;"></div>
+                <span style="font-family: 'Space Grotesk', sans-serif; font-size: 0.8rem; color: #ffe600; text-transform: uppercase; font-weight: bold;">Custom (<span id="radius-scale-label">1.5</span>x)</span>
+            </div>
+        </div>
         
-                <p style="font-family: 'Permanent Marker', cursive; color: #ffe600; font-size: 1.3rem; margin: 0; letter-spacing: 1px; text-transform: uppercase;">
-                    Target Visual Signature
-                </p>
+        <p style="font-family: 'Permanent Marker', cursive; color: #ffe600; font-size: 1.3rem; margin: 0; letter-spacing: 1px; text-transform: uppercase;">
+            Target Visual Signature
+        </p>
+
+        <div style="width: 90%; background: #111; border: 2px solid #333; border-radius: 8px; padding: 12px; margin: 10px 0; font-family: 'Space Grotesk', sans-serif; text-align: left; box-sizing: border-box;">
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; border-bottom: 1px solid #333; padding-bottom: 5px; margin-bottom: 8px; font-weight: bold; font-size: 0.75rem; color: #888; text-transform: uppercase;">
+                <span>Metric</span>
+                <span style="text-align: center;">Earth</span>
+                <span style="text-align: center; color: #ffe600;">Custom</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; font-size: 0.85rem; padding: 3px 0; color: #eee;">
+                <span>🪐 Mass (vs Earth)</span>
+                <span style="text-align: center; color: #a1a1aa;">1.0</span>
+                <span style="text-align: center; font-weight: bold; color: #ffe600;"><span id="stat-mass">1.0</span>x</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; font-size: 0.85rem; padding: 3px 0; color: #eee;">
+                <span>📐 Radius (vs Earth)</span>
+                <span style="text-align: center; color: #a1a1aa;">1.0</span>
+                <span style="text-align: center; font-weight: bold; color: #ffe600;"><span id="stat-radius">1.0</span>x</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; font-size: 0.85rem; padding: 3px 0; color: #eee;">
+                <span>⏱️ Year Length (Days)</span>
+                <span style="text-align: center; color: #a1a1aa;">365</span>
+                <span style="text-align: center; font-weight: bold; color: #ffe600;"><span id="stat-period">30</span></span>
+            </div>
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; font-size: 0.85rem; padding: 3px 0; color: #eee;">
+                <span>☀️ Star Temperature</span>
+                <span style="text-align: center; color: #a1a1aa;">5778 K</span>
+                <span style="text-align: center; font-weight: bold; color: #ffe600;"><span id="stat-temp">5800</span> K</span>
+            </div>
+        </div>
         
-                <div id="result" class="panel" style="padding: 20px; background: #141419; border-color: #e60026; box-shadow: 5px 5px 0px #e60026; width: 85%; display: none; margin-top: 15px; box-sizing: border-box;">
-                    </div>
+        <div id="result" class="panel" style="padding: 20px; background: #141419; border-color: #e60026; box-shadow: 5px 5px 0px #e60026; width: 90%; display: none; box-sizing: border-box;"></div>
 
     </div>
-
 </div>
 
 <script>
@@ -218,6 +241,20 @@
         document.getElementById('period-val').innerText = period.toFixed(0);
         document.getElementById('temp-val').innerText = temp.toFixed(0);
 
+        // Update the stats in the visual signature box
+        document.getElementById('radius-scale-label').innerText = radius.toFixed(1);
+        document.getElementById('stat-mass').innerText = mass.toFixed(1);
+        document.getElementById('stat-radius').innerText = radius.toFixed(1);
+        document.getElementById('stat-period').innerText = period.toFixed(0);
+        document.getElementById('stat-temp').innerText = temp.toFixed(0);
+
+        const baseEarthSize = 50; // base size for Earth sprite
+        let sizePx = baseEarthSize * radius;
+
+        if (sizePx > 200) sizePx = 200;
+        if (sizePx < 15) sizePx = 15;
+
+
         // Update the planet sprite 
         const planetSprite = document.getElementById('planet-sprite');
 
@@ -241,7 +278,7 @@
 
         // apply the styles
         planetSprite.style.backgroundColor = planetColor;
-        planetSprite.style.boxshadow = '0 0 30px ${glowColor}, insert 0 0 20px rgba(0, 0, 0, 0.6)';
+        planetSprite.style.boxShadow = `0 0 30px ${glowColor}, inset 0 0 20px rgba(0, 0, 0, 0.6)`;
     }
 
     window.onload = function () {
