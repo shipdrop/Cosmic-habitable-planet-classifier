@@ -329,15 +329,15 @@
             const mass = parseFloat(document.getElementById('mass').value);
             const radius = parseFloat(document.getElementById('radius').value);
             const period = parseFloat(document.getElementById('period').value);
-            const temp = parseFloat(document.getElementById('star_temp').value);
+            const temp = parseFloat(document.getElementById('star-temp').value);
 
-            document.getElementById('mass-val').innerText = mass.toFixed(1);
-            document.getElementById('radius-val').innerText = mass.toFixed(1);
-            document.getElementById('period-val').innerText = mass.Tofixed(0);
-            document.getElementById('temp-val').innerText = mass.tofixed(0);
+            document.getElementById('mass-val').innerText = mass.tofixed(1);
+            document.getElementById('radius-val').innerText = radius.tofixed(1);
+            document.getElementById('period-val').innerText = period.tofixed(0);
+            document.getElementById('temp-val').innerText = temp.tofixed(0);
 
             if (planetMesh) {
-                planetMesh.scale.artScalar(radius);
+                planetMesh.scale.setScalar(radius);
             }
 
             orbitSpeed = (1/ period) * 1.5;
@@ -384,7 +384,7 @@
                 pl_bmasse: parseFloat(document.getElementById('mass').value),
                 pl_rade: parseFloat(document.getElementById('radius').value),
                 pl_orbper: parseFloat(document.getElementById('period').value),
-                pl_teff: parseFloat(document.getElementById('star_temp').value)
+                st_teff: parseFloat(document.getElementById('star_temp').value)
             };
 
             const apiUrl = "https://rikimii-exoplanet-api.hf.space/predict";
@@ -397,11 +397,11 @@
                     body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) throw new Error('Status ${response.status}');
+                if (!response.ok) throw new Error(`Status ${response.status}`);
 
                 const data = await response.json();
                 resultDiv.style.display = "block";
-                resultDiv.innerHTML = 'CLASSIFICATION: ${data.prediction.toUpperCase()}';
+                resultDiv.innerHTML = `CLASSIFICATION: ${data.prediction.toUpperCase()}`;
 
                 if (data.prediction === "Habitable Candidate") {
                     resultDiv.style.background = "#047857";
@@ -415,7 +415,7 @@
                 console.error("API Error:", error);
                 resultDiv.style.display = "block";
                 resultDiv.style.background = "#e60026";
-                resultDiv.innerHTML = ' FEED OFFLINE<br><span style="font-size: 0.75rem; font-weight:normal;">Backend waking up. Try again later...</span>';    
+                resultDiv.innerHTML = `FEED OFFLINE<br><span style="font-size: 0.75rem; font-weight:normal;">Backend waking up. Try again later...</span>`;    
             }
         }
 
