@@ -69,15 +69,21 @@
         }
 
         .header h1 {
-            font-size: 0.8rem;
-            margin: 5px 0 0 0;
-            color: #a1a1aa;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+            color: #00f0ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
         }
 
         .header p {
-            font-size: 0.8rem;
-            margin: 5px 0 0 0;
+            font-size: 0.75rem;
+            margin: 6px 0 0 0;
             color: #a1a1aa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         
@@ -122,14 +128,18 @@
         }
 
         .panel-title {
-            font-size: 1rem;
+            font-size: 0.85rem;
             font-weight: 700;
             color: #ffe600;
             margin-top: 0;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             text-transform: uppercase;
+            letter-spacing: 1.5px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 230, 0, 0.2);
+            padding-bottom: 8px;
         }
 
         .control-group {
@@ -137,16 +147,25 @@
         }
 
         .control-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             display: flex;
             justify-content: space-between;
-            margin-bottom: 6px;
-            color: #e4e4e7;
+            margin-bottom: 8px;
+            color: #d4d4d8;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
         }
 
         .control-label span {
             color: #00f0ff;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 700;
+            font-size: 0.85rem;
+            background: rgba(0, 240, 255, 0.1);
+            padding: 1px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 240, 255, 0.3);
         }
 
         input[type="range"] {
@@ -192,14 +211,20 @@
         /* CAMERA TOOLS */
         .hint-bar {
             text-align: center;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 8px 16px;
+            background: rgba(10, 10, 16, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 8px 18px;
             border-radius: 20px;
-            font-size: 0.75rem;
-            color: #888;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #a1a1aa;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
             align-self: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0,5);
         }
+        
     </style>
 </head>
 <body>
