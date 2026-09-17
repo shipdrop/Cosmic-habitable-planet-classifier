@@ -602,15 +602,19 @@
                 if (cameraMode === 'planet') {
                     // scaled distance based on planet's radius
                     const currentRadius = parseFloat(document.getElementById('radius').value);
-                    const followDistance = currentRadius * 8 + 12; // backs up based on size
-                    const heightOffset = currentRadius * 3 + 5;
+                    const followDistance = currentRadius * 4 + 10; // backs up based on size
+                    const heightOffset = currentRadius * 2 + 6;
+
+                    // Position directly behind the planet
+                    const normX = planetMesh.position.x / orbitRadius;
+                    const normZ = planetMesh.position.y / orbitRadius;
 
                     targetCameraPos.set(
-                        planetMesh.position.x - Math.sin(orbitAngle) * followDistance,
+                        planetMesh.position.x + normX * followDistance,
                         planetMesh.position.y + heightOffset,
-                        planetMesh.position.z + Math.cos(orbitAngle) * followDistance
+                        planetMesh.position.z + normZ * followDistance
                     );
-                    
+
                     targetLookAt.copy(planetMesh.position);
                 } else if (cameraMode === 'star') {
                     targetLookAt.set(0, 0, 0,);
