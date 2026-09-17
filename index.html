@@ -502,6 +502,9 @@
         }
 
         async function sendPrediction() {
+            const btn = document.querySelector('btn-analyze');
+            const resultDiv = document.getElementById('result');
+
             const payload = {
                 pl_bmasse: parseFloat(document.getElementById('mass').value),
                 pl_rade: parseFloat(document.getElementById('radius').value),
