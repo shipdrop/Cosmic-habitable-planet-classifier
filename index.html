@@ -323,7 +323,7 @@
         <div class=" header interactive">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h1>Exoplanet 3D Engine</h1>
-                <div class="status-badge" id="system-status">
+                <div class="status-badge" id="system-status" style="margin-left: -8px;">
                     <span class="status-dot"></span>
                     <span class="status-text">SYSTEM ONLINE</span>
                 </div>
@@ -615,7 +615,7 @@
                 // update status to indicate offline on error
                 statusBadge.classList.add('offline');
                 statusBadge.querySelector('.status-text').innerText = "SYSTEM OFFLINE";
-                
+
                 resultDiv.classList.remove('analyzing-pulse');
                 resultDiv.style.background = "#e60026";
                 resultDiv.innerHTML = `FEED OFFLINE<br><span style="font-size: 0.75rem; font-weight:normal;">Backend waking up. Try again later...</span>`;    
