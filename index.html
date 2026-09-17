@@ -524,11 +524,16 @@
             resultDiv.innerHTML = "COMPUTING MODEL DATA...";
 
             try {
-                const response = await fetch(apiUrl, {
+                // 3 sec delay for the aesthetic 
+                const delayPromise = new Promise(resolve => setTimeout(resolve, 3000));
+                const fetchPromise = await fetch(apiUrl, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
+
+                // wait for both responses to complete
+                const [response]= await Promise.all([fetchPromise, delayPromise]);
 
                 if (!response.ok) throw new Error(`Status ${response.status}`);
 
