@@ -600,14 +600,17 @@
 
                 // dyna planet focus target
                 if (cameraMode === 'planet') {
-                    const offsetDistance = 6;
-                    const heightOffset = 3;
+                    // scaled distance based on planet's radius
+                    const currentRadius = parseFloat(document.getElementById('radius').value);
+                    const followDistance = currentRadius * 8 + 12; // backs up based on size
+                    const heightOffset = currentRadius * 3 + 5;
 
                     targetCameraPos.set(
-                        planetMesh.position.x + Math.sin(orbitAngle) * offsetDistance,
+                        planetMesh.position.x - Math.sin(orbitAngle) * followDistance,
                         planetMesh.position.y + heightOffset,
-                        planetMesh.position.z + Math.cos(orbitAngle) * offsetDistance
+                        planetMesh.position.z + Math.cos(orbitAngle) * followDistance
                     );
+                    
                     targetLookAt.copy(planetMesh.position);
                 } else if (cameraMode === 'star') {
                     targetLookAt.set(0, 0, 0,);
