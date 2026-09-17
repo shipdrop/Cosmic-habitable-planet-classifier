@@ -180,32 +180,69 @@
             color: #fff;
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             padding: 12px;
             border: 2px solid #fff;
             border-radius: 6px;
             cursor: pointer;
             box-shadow: 4px 4px 0px #00f0ff;
-            transition: all 0.2s ease;
+            transition: all 0.2 cubic-bezier(0.4, 0, 0.2, 1);
             text-transform: uppercase;
+            letter-spacing: 1.5px;
             margin-top: 10px;
         }
         
+        .btn-analyze:hover {
+            background: #ff1a3c;
+            box-shadow: 6px 6px 0px #00f0ff, 0 0 15px rgba(0, 240, 255, 0.4);
+            transform: translate(-2px, -2px);
+        }
+
         .btn-analyze:active {
             transform: translate(2px, 2px);
             box-shadow: 2px 2px 0px #00f0ff;
         }
 
-        /* DISPLAY RESULTS */
+        .btn.analyze:disabled {
+            opacity: 0.6;
+            cursor: wait;
+            transform: none;
+        }
+
+        /* DISPLAY RESULTS and animations */
         #result {
             display: none;
             margin-top: 15px;
             padding: 12px;
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 700;
             text-align: center;
             border: 1px solid #fff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: badgePop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes badgePop {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translateY(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Pulse Effect */
+        .analyzing-pulse {
+            animation: pulseGlow 1.2s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1;}
         }
 
         /* CAMERA TOOLS */
@@ -473,7 +510,15 @@
             };
 
             const apiUrl = "https://rikimii-exoplanet-api.hf.space/predict";
-            const resultDiv = document.getElementById('result');
+            
+            // UI feedback: loading state
+            btn.disabled = true;
+            btn.innerText = "ANALYZING..."
+            resultDiv.style.display = "block";
+            resultDiv.classList.add('analyzing-pulse');
+            resultDiv.style.background = "rgba(10, 10, 16, 0.8)";
+            resultDiv.style.borderColor = "#00f0ff";
+            resultDiv.innerHTML = "COMPUTING MODEL DATA...";
 
             try {
                 const response = await fetch(apiUrl, {
@@ -485,7 +530,7 @@
                 if (!response.ok) throw new Error(`Status ${response.status}`);
 
                 const data = await response.json();
-                resultDiv.style.display = "block";
+                resultDiv.classList.remove('analyzing-pulse');
                 resultDiv.innerHTML = `CLASSIFICATION: ${data.prediction.toUpperCase()}`;
 
                 if (data.prediction === "Habitable Candidate") {
@@ -498,9 +543,13 @@
 
             } catch (error) {
                 console.error("API Error:", error);
-                resultDiv.style.display = "block";
+                resultDiv.classList.remove('analyzing-pulse');
                 resultDiv.style.background = "#e60026";
                 resultDiv.innerHTML = `FEED OFFLINE<br><span style="font-size: 0.75rem; font-weight:normal;">Backend waking up. Try again later...</span>`;    
+            } finally {
+                // restore btn state
+                btn.disabled = false;
+                btn.innerText = "RUN ML ANALYSIS";
             }
         }
 
