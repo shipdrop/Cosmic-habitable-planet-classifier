@@ -311,6 +311,33 @@
             box-shadow: 0 0 8px #e60026;
         }
 
+        /* Camera Preset Buttons */
+        .btn-cam {
+            flex: 1;
+            background: rgba(0, 240, 255, 0.05);
+            color: #00f0ff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 8px 6px;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cam.hover {
+            background-color: rgba(0, 240, 255, 0.2);
+            border-color: #00f0ff;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+        }
+
+        .btn-cam.active {
+            transform: scale(0.98);
+        }
+
     </style>
 </head>
 <body>
@@ -362,6 +389,15 @@
                     <input type="range" id="star-temp" min="2000" max="10000" step="100" value="5800" oninput="updateSimulation()">
                 </div>
 
+                <div class="control-group">
+                    <label class='control-label'>Camera Presets</label>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-cam" onclick="setCameraView('overview')">Overview</button>
+                        <button class="btn-cam" onclick="setCameraView('planet')">Focus Planet</button>
+                        <button class="btn-cam" onclick="setCameraView('star')">Focus Star</button>
+                    </div>
+                </div>
+
                 <button class="btn-analyze" onclick="sendPrediction(this)"> RUN ML ANALYSIS</button>
                 <div id="result"></div>
             </div>
@@ -383,6 +419,22 @@
         // CUstom Mouse drag controls
         let isDragging = false;
         let previousMousePosition = { x: 0, y: 0};
+
+        // Dynamic Camera Target Via
+        let targetCameraPos = new THREE.Vector3(0, 25, 45);
+        let targetLookAt = new THREE.Vector3(0, 0, 0,);
+        let currentLookAt = new THREE.Vector3(0, 0, 0);
+        let cameraMode = 'overview';
+
+        function setCameraView(mode) {
+            cameraMode = mode;
+
+            if (mode === 'overview') {
+                targetCameraPos.set(0, 25, 45);
+            } else if (mode === 'star') {
+                targetCameraPos.set(0, 5, 15);
+            }
+        } // planet mode is inside animate()
 
         function init3D() {
             const container = document.getElementById('canvas-container');
@@ -545,7 +597,26 @@
                 planetMesh.position.x = Math.cos(orbitAngle) * orbitRadius;
                 planetMesh.position.z = Math.sin(orbitAngle) * orbitRadius;
                 planetMesh.rotation.y += 0.01;
+
+                // dyna planet focus target
+                if (cameraMode === 'planet') {
+                    targetCameraPos.set(
+                        planetMesh.position.x + 5,
+                        planetMesh.position.y + 3,
+                        planetMesh.position.z + 5
+                    );
+                    targetLookAt.copy(planetMesh.position);
+                } else if (cameraMode === 'star') {
+                    targetLookAt.set(0, 0, 0,);
+                } else {
+                    targetLookAt(0, 0, 0);
+                }
             }
+
+            // smoot Cam movement
+            camera.position.lerp(targetCameraPos, 0.05);
+            currentLookAt.lerp(targetLookAt, 0.05);
+            camera.lookAt(currentLookAt);
 
             renderer.render(scene, camera);
         }
