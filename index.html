@@ -262,6 +262,53 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
         }
 
+        /* Status BAdge Styles */
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background-color: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
+            animation: statusPulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* APi error override */
+        .status-badge.offline {
+            border-color: rgba(230, 0, 38, 0.5);
+            background: rgba(230, 0, 38, 0.1);
+            color: #ff4d6d;
+        }
+
+        .status-badge.offline .status-dot {
+            background-color: #e60026;
+            box-shadow: 0 0 8px #e60026;
+        }
+
     </style>
 </head>
 <body>
@@ -274,7 +321,13 @@
      <div class="hud-layer">
         
         <div class=" header interactive">
-            <h1>Exoplanet 3D Engine</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1>Exoplanet 3D Engine</h1>
+                <div class="status-badge" id="system-status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">SYSTEM ONLINE</span>
+                </div>
+            </div>
             <p>WebGL Real-Time Orbital Mechanics & Classification</p>
         </div>
 
@@ -504,6 +557,7 @@
         async function sendPrediction(btn) {
             btn = btn || document.querySelector('.btn-analyze');
             const resultDiv = document.getElementById('result');
+            const statusBadge = document.getElementById('system-status');
 
             const payload = {
                 pl_bmasse: parseFloat(document.getElementById('mass').value),
@@ -538,6 +592,12 @@
                 if (!response.ok) throw new Error(`Status ${response.status}`);
 
                 const data = await response.json();
+
+                // updating status badge if it was offline
+                statusBadge.classList.remove('offline');
+                statusBadge.querySelector('.status-text').innerText = "SYSTEM ONLINE";
+
+                // render classification results
                 resultDiv.classList.remove('analyzing-pulse');
                 resultDiv.innerHTML = `CLASSIFICATION: ${data.prediction.toUpperCase()}`;
 
@@ -551,6 +611,11 @@
 
             } catch (error) {
                 console.error("API Error:", error);
+
+                // update status to indicate offline on error
+                statusBadge.classList.add('offline');
+                statusBadge.querySelector('.status-text').innerText = "SYSTEM OFFLINE";
+                
                 resultDiv.classList.remove('analyzing-pulse');
                 resultDiv.style.background = "#e60026";
                 resultDiv.innerHTML = `FEED OFFLINE<br><span style="font-size: 0.75rem; font-weight:normal;">Backend waking up. Try again later...</span>`;    
