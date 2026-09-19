@@ -541,16 +541,25 @@
         }
 
         function onMouseMove(e) {
-            if (!isDragging || cameraMode === 'planet') return;
+            if (!isDragging || cameraMode !== 'overview') return;
             const deltaMove = {
                 x: e.clientX - previousMousePosition.x,
                 y: e.clientY - previousMousePosition.y
             };
 
-            systemGroup.rotation.y += deltaMove.x * 0.005;
-            systemGroup.rotation.x += deltaMove.y * 0.005;
+            // calculate rotations
+            const deltaRotationQuaternion = new THREE.Quaternion()
+                .setFromEuler(new THREE.Euler(
+                    (deltaMove.y * 0.005),
+                    (deltaMove.x * 0.005),
+                    0,
+                    'XYZ'
+                ));
 
-            previousMousePosition = { x: e.clientX, y: e.clientY };
+                // rotate freely
+                systemGroup.quaternion.multiplyQuaternions(deltaRotationQuaternion, systemGroup.quaternion);
+
+                previousMousePosition = { x: e.clientX, y: e.clientY };
         }
 
         function updateSimulation() {
