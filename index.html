@@ -602,20 +602,23 @@
                 if (cameraMode === 'planet') {
                     // scaled distance based on planet's radius
                     const currentRadius = parseFloat(document.getElementById('radius').value);
-                    const followDistance = currentRadius * 4 + 10; // backs up based on size
+
+                    // get planets position
+                    const planetWorldPos = new THREE.Vector3();
+                    planetMesh.getWorldPosition(planetWorldPos);
+
+                    // dynamic dist scale
+                    const viewDistance = currentRadius * 4 + 12;
                     const heightOffset = currentRadius * 2 + 6;
 
-                    // Position directly behind the planet
-                    const normX = planetMesh.position.x / orbitRadius;
-                    const normZ = planetMesh.position.y / orbitRadius;
 
                     targetCameraPos.set(
-                        planetMesh.position.x + normX * followDistance,
+                        planetMesh.position.x + viewDistance,
                         planetMesh.position.y + heightOffset,
-                        planetMesh.position.z + normZ * followDistance
+                        planetMesh.position.z + viewDistance
                     );
 
-                    targetLookAt.copy(planetMesh.position);
+                    targetLookAt.copy(planetWorldPos);
                 } else if (cameraMode === 'star') {
                     targetLookAt.set(0, 0, 0,);
                 } else {
