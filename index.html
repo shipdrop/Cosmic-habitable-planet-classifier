@@ -629,7 +629,6 @@
                         planetWorldPos.z + fowardZ * (currentRadius * 2)
                     );
 
-                    targetLookAt.copy(planetWorldPos);
                 } else if (cameraMode === 'star') {
                     targetLookAt.set(0, 0, 0,);
                 } else {
@@ -637,7 +636,7 @@
                 }
             }
 
-            // smoot Cam movement
+            // smooth Cam movement
             camera.position.lerp(targetCameraPos, 0.05);
             currentLookAt.lerp(targetLookAt, 0.05);
             camera.lookAt(currentLookAt);
