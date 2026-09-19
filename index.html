@@ -608,14 +608,25 @@
                     planetMesh.getWorldPosition(planetWorldPos);
 
                     // dynamic dist scale
-                    const viewDistance = currentRadius * 4 + 12;
-                    const heightOffset = currentRadius * 2 + 6;
+                    const followDistance = currentRadius * 5 + 10;
+                    const heightOffset = currentRadius * 2 + 5;
+                    
+                    // foward direction vector
+                    const fowardX = -Math.sin(orbitAngle);
+                    const fowardZ = Math.cos(orbitAngle);
 
-
+                    // camera sits behind the planet
                     targetCameraPos.set(
-                        planetMesh.position.x + viewDistance,
+                        planetMesh.position.x - fowardX * followDistance,
                         planetMesh.position.y + heightOffset,
-                        planetMesh.position.z + viewDistance
+                        planetMesh.position.z + fowardZ * followDistance
+                    );
+
+                    // look slightly ahead of the planet
+                    targetLookAt.set(
+                        planetWorldPos.x + fowardX * (currentRadius * 2),
+                        planetWorldPos.y,
+                        planetWorldPos.z + fowardZ * (currentRadius * 2)
                     );
 
                     targetLookAt.copy(planetWorldPos);
