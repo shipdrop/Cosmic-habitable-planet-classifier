@@ -541,7 +541,8 @@
         }
 
         function onMouseMove(e) {
-            if (!isDragging) return;
+            if (!isDragging || cameraMode === 'planet') return;
+            
             const deltaMove = {
                 x: e.clientX - previousMousePosition.x,
                 y: e.clientY - previousMousePosition.y
@@ -600,35 +601,18 @@
 
                 // dyna planet focus target
                 if (cameraMode === 'planet') {
-                    // scaled distance based on planet's radius
-                    const currentRadius = parseFloat(document.getElementById('radius').value);
+                   const planetWorldPos = new THREE.Vector3();
+                   planetMesh.getWorldPosition(planetWorldPos);
 
-                    // get planets position
-                    const planetWorldPos = new THREE.Vector3();
-                    planetMesh.getWorldPosition(planetWorldPos);
-
-                    // dynamic dist scale
-                    const followDistance = currentRadius * 5 + 10;
-                    const heightOffset = currentRadius * 2 + 5;
-                    
-                    // foward direction vector
-                    const fowardX = -Math.sin(orbitAngle);
-                    const fowardZ = Math.cos(orbitAngle);
-
-                    // camera sits behind the planet
-                    targetCameraPos.set(
-                        planetMesh.position.x - fowardX * followDistance,
-                        planetMesh.position.y + heightOffset,
-                        planetMesh.position.z + fowardZ * followDistance
-                    );
-
-                    // look slightly ahead of the planet
-                    targetLookAt.set(
-                        planetWorldPos.x + fowardX * (currentRadius * 2),
-                        planetWorldPos.y,
-                        planetWorldPos.z + fowardZ * (currentRadius * 2)
-                    );
-
+                   // position camera alwyas to planet cuurent position
+                   const followDistance = 15;
+                   targetCameraPos.set(
+                    planetWorldPos.x,
+                    planetWorldPos.y + 5,
+                    planetWorldPos.z + followDistance
+                   );
+                   // lock cam
+                   targetLookAt.copy(planetWorldPos);
                 } else if (cameraMode === 'star') {
                     targetLookAt.set(0, 0, 0,);
                 } else {
