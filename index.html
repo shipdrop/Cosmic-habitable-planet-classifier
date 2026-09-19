@@ -476,21 +476,39 @@
             starMesh = new THREE.Mesh(starGeo, starMat);
             systemGroup.add(starMesh);
 
-            const glowGeo = new THREE.SphereGeometry(4.2, 32, 32);
-            const glowMat = new THREE.MeshBasicMaterial({
-                color: 0xffaa00,
-                transparent: true,
-                opacity: 0.25,
-                side: THREE.BackSide
+            const glowMat = new THREE.ShaderMaterial({
+                vertexShader: `
+                    varying vec3 vNormal:
+                    void main() {
+                        vNormal = normalize(normalMatrix * normal);
+                        gl_Position = projectionMatrix * modelViewMatrix * vec(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    varying vec3 vNormal;
+                    uniform vec3 color;
+                    void main() {
+                        float intensity = pow(0.6 - dot(vNormal, vec3(0, 0, 1.0)), 2.0);
+                        gl_FragColor = vec4(color, intensity * 0.8);
+                    }
+                `,
+                uniforms: {
+                    color: { value: new THREE.Color(0xffdd66) }
+                },
+                blending: THREE.AdditiveBlending,
+                side: THREE.Backside,
+                transparent: true
             });
-            const starGlow = new THREE.Mesh(glowGeo, glowMat);
-            starMesh.add(starGlow); // add directly to the star
 
-            //8. Custom Planet
+            const glowGeo = new THREE.SphereGeometry(5.0, 32, 32);
+            const starGlowMesh = new THREE.Mesh(glowGeo, glowMat);
+            starMesh.add(starGlowMesh);
+
+            // 8. Custom Planet
             const planetGeo = new THREE.SphereGeometry(1, 32, 32);
-            const planetMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, roughness: 0.5 });
-            planetMesh = new THREE.Mesh(planetGeo, planetMat);
-            systemGroup.add(planetMesh);
+            const planetMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.4, metalness: 0.1});
+            const planetMesh = new THREE.Mesh(planetGeo, planetMat);
+            systemGroup.add(planetMesh)
 
             // 9. ORbit Ring
             const ringGeo = new THREE.RingGeometry(orbitRadius - 0.1, orbitRadius + 0.1, 64);
@@ -520,19 +538,35 @@
 
         function createStarfield() {
             const starsGeo = new THREE.BufferGeometry();
-            const count = 2000;
+            const count = 3000;
             const positions = new Float32Array(count * 3);
+            const colors = new Float32Array(count * 3)
 
-            for(let i = 0; i < count * 3; i++) {
-                positions[i] = (Math.random() -0.5) * 300;
+            const spectralPalette = [
+                new THREE.Color(0x88ccff), // blue star
+                new THREE.Color(0xffffff), // white star
+                new THREE.Color(0xffdd66), // yellow star
+                new THREE.Color(0xff6644), // red star
+            ];
+
+            for (let i = 0; i < count; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 400;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 400;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 400;
+
+                const c = spectralPalette[Math.floor(Math.random() * spectralPalette.length)];
+                colors[i * 3] = c.r;
+                colors[i * 3 + 1] = c.g;
+                colors[i * 3 + 2] = c.b;
             }
-            starsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-            // generate soft round stars
+            starsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            starsGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
             const canvas = document.createElement('canvas');
             canvas.width = 16;
             canvas.height = 16;
-            const ctx = canvas.getContext('2d')
+            const ctx = canvas.getContext('2d');
             const gradient = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
             gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
             gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
@@ -541,9 +575,9 @@
 
             const starTexture = new THREE.CanvasTexture(canvas);
             const starsMat = new THREE.PointsMaterial({
-                color: 0xffffff,
-                size: 1.5,
-                map: starTexture,
+                size: 1.8,
+                vertexColors: true,
+                Map: starTexture,
                 transparent: true,
                 alphaTest: 0.05,
                 depthWrite: false
@@ -592,28 +626,35 @@
             orbitSpeed = (1/ period) * 1.5;
 
             if (starMesh && planetMesh) {
-                let starColor, planetColor;
+                let targetStarColor = new THREE.Color();
+                let targetPlanetColor = new THREE.Color();
+
                 if (temp < 4000) {
-                    starColor = new THREE.Color(0xff3300);
-                    planetColor = new THREE.Color(0xef4444);
+                    targetStarColor.setHex(0xff3300);
+                    targetPlanetColor.setHex(0xef4444);
                 } else if (temp < 7000) {
-                    starColor = new THREE.Color(0xffdd66);
-                    planetColor = new THREE.Color(0x10b981);
+                    targetStarColor.setHex(0xffdd66);
+                    targetPlanetColor.setHex(0x10b981);
                 } else {
-                    starColor = new THREE.Color(0x88ccff);
-                    planetColor = new THREE.Color(0x00f0ff);
+                    targetStarColor.setHex(0x88ccff);
+                    targetPlanetColor.setHex(0x00f0ff);
                 }
 
-                starMesh.material.color.copy(starColor);
-                if (starMesh.children[0]) {
-                    starMesh.children[0].material.color.copy(starColor);
+                // Smooth color Transition
+                starMesh.material.color.lerp(targetStarColor, 0.2);
+                if (starGlowMesh) {
+                    starGlowMesh.material.uniforms.color.value.lerp(targetStarColor, 0.2);
                 }
-                planetMesh.material.color.copy(planetColor);
+                pointLight.color.lerp(targetStarColor, 0.2);
+                planetMesh.material.color.lerp(targetPlanetColor, 0.2);
             }
         }
 
         function animate() {
             requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+            const lerpspeed = 1 - Math.exp(-6 * delta); // frame-rate independent cam
 
             if (planetMesh) {
                 orbitAngle += orbitSpeed
