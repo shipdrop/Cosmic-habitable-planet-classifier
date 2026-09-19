@@ -630,14 +630,20 @@
                     const dynaLerp = Math.min(Math.max(orbitSpeed * 4, 0.05), 0.25);
                     camera.position.lerp(targetCameraPos, dynaLerp);
                     currentLookAt.lerp(targetLookAt, dynaLerp);
-            } else {
-                // def lerp speed
-                camera.position.lerp(targetCameraPos, 0.05);
-                currentLookAt(targetLookAt, 0.05);
+                } else if (cameraMode === 'star') {
+                    targetLookAt.set(0, 0, 0);
+                    targetCameraPos.set(0, 0, 15);
+                    camera.position.lerp(targetCameraPos, 0.05);
+                    currentLookAt.lerp(targetLookAt, 0.05);
+                } else {
+                    targetLookAt.set(0, 0, 0);
+                    targetCameraPos.set(0, 25, 45);
+                    camera.position.lerp(targetCameraPos, 0.05);
+                    currentLookAt.lerp(targetLookAt, 0.05);
+                }
             }
-        }    
+                
             camera.lookAt(currentLookAt);
-
             renderer.render(scene, camera);
         }
 
