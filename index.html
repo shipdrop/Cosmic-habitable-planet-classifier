@@ -51,9 +51,6 @@
             flex-direction: column;
             justify-content: space-between;
             padding: 30px;
-            -webkit-user-select: none;
-            user-select: none;
-
         }
 
         .interactive {
@@ -503,11 +500,17 @@
             systemGroup.add(orbitRing);
 
             // Event listeners for Custom drag-controls
-            container.addEventListener('mousedown', (e) => {
+            window.addEventListener('mousedown', (e) => {
+                if(e.target.closest('.interactive')) return;
+
                 isDragging = true;
                 previousMousePosition = { x: e.clientX, y: e.clientY };
             });
-            window.addEventListener('mouseup', () => { isDragging = true; });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('resize', onWindowResize);
 
