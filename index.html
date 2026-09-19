@@ -507,7 +507,7 @@
                 isDragging = true;
                 previousMousePosition = { x: e.clientX, y: e.clientY };
             });
-            window.addEventListener('mouseup', () => { isDragging = false; });
+            window.addEventListener('mouseup', () => { isDragging = true; });
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('resize', onWindowResize);
 
