@@ -604,30 +604,34 @@
                     const planetWorldPos = new THREE.Vector3();
                     planetMesh.getWorldPosition(planetWorldPos);
 
-                    //tangent direction
-                    const tangentX = -Math.sin(orbitAngle);
-                    const tangentZ = Math.cos(orbitAngle);
-
                     // position camera alwyas to planet cuurent position
-                    const followDistance = radius * 4 + 8;
-                    const heightOffset = radius * 1.5 + 3;
+                    const followDistance = radius * 5 + 10;
+                    const heightOffset = radius * 2 + 4;
+
+                    // unit tangent
+                    const fowardX = -Math.sin(orbitAngle);
+                    const fowardZ = Math.cos(orbitAngle);
+
+                    // apply scene rotation
+                    const tangentDir = new THREE.Vector3(fowardX, 0, fowardZ);
+                    tangentDir.applyQuaternion(systemGroup.quaternion);
 
                     // place camera behing planet
                     targetCameraPos.set(
-                        planetWorldPos.x - tangentX * followDistance,
+                        planetWorldPos.x - tangentDir.x * followDistance,
                         planetWorldPos.y + heightOffset,
-                        planetWorldPos.z - tangentZ * followDistance
+                        planetWorldPos.z - tangentDir.z * followDistance
                     );
                    
                     // lock cam
                     targetLookAt.set(
-                        planetWorldPos.x + tangentX * (radius * 2),
+                        planetWorldPos.x + tangentDir.x * (radius * 2),
                         planetWorldPos.y,
-                        planetWorldPos.z + tangentZ * (radius * 2)
+                        planetWorldPos.z + tangentDir.z * (radius * 2)
                     );
                     
                     // dyna lerp speed
-                    const dynaLerp = Math.min(Math.max(orbitSpeed * 4, 0.05), 0.25);
+                    const dynaLerp = Math.min(Math.max(orbitSpeed * 6, 0.08), 0.3);
                     camera.position.lerp(targetCameraPos, dynaLerp);
                     currentLookAt.lerp(targetLookAt, dynaLerp);
                 } else if (cameraMode === 'star') {
@@ -642,7 +646,7 @@
                     currentLookAt.lerp(targetLookAt, 0.05);
                 }
             }
-                
+
             camera.lookAt(currentLookAt);
             renderer.render(scene, camera);
         }
