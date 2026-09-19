@@ -497,8 +497,11 @@
             systemGroup.add(orbitRing);
 
             // Event listeners for Custom drag-controls
-            window.addEventListener('mousedown', (e) => { isDragging = true; });
-            window.addEventListener('mouseup', (e) => { isDragging = false; });
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            window.addEventListener('mouseup', () => { isDragging = false; });
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('resize', onWindowResize);
 
@@ -556,10 +559,10 @@
                     'XYZ'
                 ));
 
-                // rotate freely
-                systemGroup.quaternion.multiplyQuaternions(deltaRotationQuaternion, systemGroup.quaternion);
+            // rotate freely
+            systemGroup.quaternion.multiplyQuaternions(deltaRotationQuaternion, systemGroup.quaternion);
 
-                previousMousePosition = { x: e.clientX, y: e.clientY };
+            previousMousePosition = { x: e.clientX, y: e.clientY };
         }
 
         function updateSimulation() {
@@ -592,9 +595,11 @@
                     planetColor = new THREE.Color(0x00f0ff);
                 }
 
-                starMesh.material.color = starColor;
-                starMesh.children[0].material.color = starColor;
-                planetMesh.material.color = planetColor;
+                starMesh.material.color.copy(starColor);
+                if (starMesh.children[0]) {
+                    starMesh.children[0].material.color.copy(starColor);
+                }
+                planetMesh.material.color.copy(planetColor);
             }
         }
 
