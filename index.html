@@ -559,20 +559,33 @@
             canvas.width = 64;
             canvas.height = 64;
             const ctx = canvas.getContext('2d');
-            //Smooth radial gradient from solid white to transparent
-            const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-            gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)');
-            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 64, 64);
+            
+            const center = 32;
+            const outerRadius = 28;
+            const innerControl = 32;
+
+            ctx.beginPath();
+            // top point
+            ctx.moveTo(center, center - outerRadius);
+            //curve to right
+            ctx.quadraticCurveTo(center, center, center + outerRadius, center);
+            // curve to bottom
+            ctx.quadraticCurveTo(center, center, center, center + outerRadius);
+            // curve to left point
+            ctx.quadraticCurveTo(center, center, center - outerRadius, center);
+            // curve to the beginning point
+            ctx.quadraticCurveTo(center, center, center, center - outerRadius)
+            ctx.closePath();
+
+            ctx.fillStyle = '#ffffff'
+            ctx.fill();
 
             const starTexture = new THREE.CanvasTexture(canvas);
             starTexture.minFilter = THREE.LinearFilter;
             starTexture.magFilter = THREE.LinearFilter;
 
             const starsMat = new THREE.PointsMaterial({
-                size: 1.5,
+                size: 1.8,
                 color: 0xffffff,
                 map: starTexture,
                 transparent: true,
