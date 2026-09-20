@@ -479,7 +479,7 @@
 
             const glowMat = new THREE.ShaderMaterial({
                 vertexShader: `
-                    varying vec3 vNormal:
+                    varying vec3 vNormal;
                     void main() {
                         vNormal = normalize(normalMatrix * normal);
                         gl_Position = projectionMatrix * modelViewMatrix * vec(position, 1.0);
@@ -508,7 +508,7 @@
             // 8. Custom Planet
             const planetGeo = new THREE.SphereGeometry(1, 32, 32);
             const planetMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.4, metalness: 0.1});
-            const planetMesh = new THREE.Mesh(planetGeo, planetMat);
+            planetMesh = new THREE.Mesh(planetGeo, planetMat);
             systemGroup.add(planetMesh)
 
             // 9. ORbit Ring
@@ -578,7 +578,7 @@
             const starsMat = new THREE.PointsMaterial({
                 size: 1.8,
                 vertexColors: true,
-                Map: starTexture,
+                map: starTexture,
                 transparent: true,
                 alphaTest: 0.05,
                 depthWrite: false
