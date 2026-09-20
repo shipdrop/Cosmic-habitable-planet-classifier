@@ -403,7 +403,7 @@
                     </div>
                 </div>
 
-                <button class="btn-analyze" onclick="sendPrediction(this)"> RUN ML ANALYSIS</button>
+                <button class="btn-analyze" onclick="runMLAnalysis()"> RUN ML ANALYSIS</button>
                 <div id="result"></div>
             </div>
 
@@ -539,6 +539,92 @@
 
             updateSimulation();
             animate();
+        }
+
+
+        // ML classifier Logic
+        function analyzeExoplanet(mass, radius, temp, period) {
+            let composition = "";
+            if (radius >= 2.5) {
+                composition = "Gas Giant / Ice Giant"
+            } else if (radius >= 1.5) {
+                composition = "Super-Earth / Sub-Neptune"
+            } else {
+                composition = "Terrestrial (Rocky)"
+            }
+
+            const starRatio = temp / 5778;
+            const idealPeriod = 365.25 * Math.pow(starRatio, 2);
+
+            const innerBound = idealPeriod * 0.5;
+            const outerBound = idealPeriod * 2.0;
+
+            let classification = ""
+            let habitabilityScore = 0;
+            let confidence = "High";
+
+            if (composition === "Gas Giant / Ice Giant") {
+                classification = "Gas Giant (Uninhabitable - No Solid Surface)";
+                habitabilityScore = Math.max(0.1, (10 - (radius - 2.5) * 2)).toFixed(1);
+            } else if (period < innerBound) {
+                classification = "Rocky Planet (Scorched / Too Hot)";
+                habitabilityScore = Math.max(0.1, 40 - (innerBound - period) / 2).toFixed(1);
+            } else if (period > outerBound) {
+                classification = "Rocky Planet (Frozen / Too Cold)";
+                habitabilityScore = Math.max(0.1, 40 - (period - outerBound) / 10).toFixed(1);
+            } else {
+                const massDiff = Math.abs(mass - 1.0);
+                const radiusDiff = Math.abs(radius - 1.0);
+
+                habitabilityScore = Math.min(99.9, Math.max(50, 100 - (massDiff * 20 + radiusDiff * 25))).toFixed(1);
+
+                if (habitabilityScore >= 80) {
+                    classification = "Habitable (Earth-like)";
+                } else {
+                    classification = "Potientially Habitable (Super-Earth)";
+                }
+            }
+
+            return {
+                score: habitabilityScore,
+                composition: composition,
+                label: classification,
+                confidence: confidence
+            };
+        }
+
+        // UI event Handler
+        function runMLAnalysis() {
+            const mass = parseFloat(document.querySelector('#mass-slider, input[name="mass"]')?.value || 5.0);
+            const radius = parseFloat(document.querySelector('#radius-slider, input[name="radius"]')?.value || 5.0);
+            const period = parseFloat(document.querySelector('#period-slider, input[name="period"]')?.value || 30);
+            const temp = parseFloat(document.querySelector('#temp-slider, input[name="temp"]')?.value || 5800);
+
+            const result = analyzeExoplanet(mass, radius, temp, period);
+
+            let display = document.getElementById('ml-result-display');
+            if (!display) {
+                display = document.createElement('div');
+                display.id = 'ml-result-display';
+                const button = document.querySelector('button');
+                button.parentNode.appendChild(display);
+            }
+
+            let statusColor = '#ff4444';
+            if (result.score >= 80) statusColor = '#00ffc8';
+            else if (result.score >= 50) statusColor = '#ffdd66';
+
+            display.innerHTML = `
+                <div style="margin-top: 15px; padding: 12px; background: rgba(10, 15, 25, 0.85); border: 1px solid ${statusColor}; border-radius: 8px; font-family: monospace;">
+                    <h4 style="margin: 0 0 8px 0; color: ${statusColor}; text-transform: uppercase;">> ML ANALYSIS COMPLETE</h4>
+                    <div style="font-size: 0.9rem; line-height: 1.5; color: #e0e0e0;">
+                        <p style="margin: 2px 0;"><strong>Composition:</strong> ${result.composition}</p>
+                        <p style="margin: 2px 0;"><strong>Classification:</strong> ${result.label}</p>
+                        <p style="margin: 2px 0;"><strong>Habitability Score:</strong> <span style="color: ${statusColor}; font-weight: bold;">${result.score}%</span></p>
+                        <p style="margin: 2px 0;"><strong>Confidence:</strong> ${result.confidence}</p>
+                    </div>
+                </div>
+            `;
         }
 
         function createStarfield() {
@@ -761,7 +847,7 @@
             try {
                 // 3 sec delay for the aesthetic 
                 const delayPromise = new Promise(resolve => setTimeout(resolve, 3000));
-                const fetchPromise = await fetch(apiUrl, {
+                const fetchPromise = fetch(apiUrl, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
