@@ -461,6 +461,8 @@
             systemGroup = new THREE.Group();
             scene.add(systemGroup);
 
+            createStarfield();
+
             // 5. Lighting
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
             scene.add(ambientLight);
@@ -565,26 +567,34 @@
             starsGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
             const canvas = document.createElement('canvas');
-            canvas.width = 16;
-            canvas.height = 16;
+            canvas.width = 32;
+            canvas.height = 32;
             const ctx = canvas.getContext('2d');
-            const gradient = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+            const gradient = ctx.createRadialGradient(16, 16, 16, 0, 16, 16, 16);
             gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)');
             gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
             ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 16, 16);
+            ctx.fillRect(0, 0, 32, 32);
 
             const starTexture = new THREE.CanvasTexture(canvas);
+            starTexture.minFilter = THREE.LinearFilter;
+            starTexture.magFilter = THREE.LinearFilter;
+
             const starsMat = new THREE.PointsMaterial({
-                size: 1.8,
+                size: 1.2,
                 vertexColors: true,
                 map: starTexture,
                 transparent: true,
                 alphaTest: 0.05,
-                depthWrite: false
+                depthWrite: false,
+                sizeAttenuation: true,
+                blending: THREE.AdditiveBlending
             });
 
-            scene.add(new THREE.Points(starsGeo, starsMat));
+            const starPoints = new THREE.Points(starsGeo, starsMat);
+
+            systemGroup.add(starPoints);
         }
 
         function onMouseMove(e) {
