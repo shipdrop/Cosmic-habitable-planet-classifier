@@ -414,7 +414,7 @@
 
      <script>
         let scene, camera, renderer;
-        let starMesh, planetMesh, systemGroup, starGlowMesh;
+        let starMesh, planetMesh, systemGroup, starGlowMesh, pointLight;
         let orbitAngle = 0;
         let orbitRadius = 18;
         let orbitSpeed = 0.02;
@@ -465,7 +465,7 @@
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
             scene.add(ambientLight);
 
-            const pointLight = new THREE.PointLight(0xffffff, 2, 100);
+            pointLight = new THREE.PointLight(0xffffff, 2, 100);
             scene.add(pointLight);
 
             // 6. Starfield
