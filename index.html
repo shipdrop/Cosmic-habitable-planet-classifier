@@ -414,7 +414,7 @@
 
      <script>
         let scene, camera, renderer;
-        let starMesh, planetMesh, systemGroup;
+        let starMesh, planetMesh, systemGroup, starGlowMesh;
         let orbitAngle = 0;
         let orbitRadius = 18;
         let orbitSpeed = 0.02;
@@ -497,12 +497,12 @@
                     color: { value: new THREE.Color(0xffdd66) }
                 },
                 blending: THREE.AdditiveBlending,
-                side: THREE.Backside,
+                side: THREE.BackSide,
                 transparent: true
             });
 
             const glowGeo = new THREE.SphereGeometry(5.0, 32, 32);
-            const starGlowMesh = new THREE.Mesh(glowGeo, glowMat);
+            starGlowMesh = new THREE.Mesh(glowGeo, glowMat);
             starMesh.add(starGlowMesh);
 
             // 8. Custom Planet
