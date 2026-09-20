@@ -263,6 +263,8 @@
             letter-spacing: 1.2px;
             align-self: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         /* Status BAdge Styles */
@@ -545,48 +547,36 @@
             const positions = new Float32Array(count * 3);
             const colors = new Float32Array(count * 3)
 
-            const spectralPalette = [
-                new THREE.Color(0x88ccff), // blue star
-                new THREE.Color(0xffffff), // white star
-                new THREE.Color(0xffdd66), // yellow star
-                new THREE.Color(0xff6644), // red star
-            ];
-
             for (let i = 0; i < count; i++) {
                 positions[i * 3] = (Math.random() - 0.5) * 400;
                 positions[i * 3 + 1] = (Math.random() - 0.5) * 400;
                 positions[i * 3 + 2] = (Math.random() - 0.5) * 400;
-
-                const c = spectralPalette[Math.floor(Math.random() * spectralPalette.length)];
-                colors[i * 3] = c.r;
-                colors[i * 3 + 1] = c.g;
-                colors[i * 3 + 2] = c.b;
             }
 
             starsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            starsGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
             const canvas = document.createElement('canvas');
-            canvas.width = 32;
-            canvas.height = 32;
+            canvas.width = 64;
+            canvas.height = 64;
             const ctx = canvas.getContext('2d');
-            const gradient = ctx.createRadialGradient(16, 16, 16, 0, 16, 16, 16);
+            //Smooth radial gradient from solid white to transparent
+            const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
             gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
             gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)');
             gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
             ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 32, 32);
+            ctx.fillRect(0, 0, 64, 64);
 
             const starTexture = new THREE.CanvasTexture(canvas);
             starTexture.minFilter = THREE.LinearFilter;
             starTexture.magFilter = THREE.LinearFilter;
 
             const starsMat = new THREE.PointsMaterial({
-                size: 1.2,
-                vertexColors: true,
+                size: 1.5,
+                color: 0xffffff,
                 map: starTexture,
                 transparent: true,
-                alphaTest: 0.05,
+                alphaTest: 0.01,
                 depthWrite: false,
                 sizeAttenuation: true,
                 blending: THREE.AdditiveBlending
