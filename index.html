@@ -679,7 +679,7 @@
 
         function UpdatePlanetMaterial(prediction) {
             if (typeof planetMesh !== 'undefined' && planetMesh.material) {
-                planetMesh.material.map = generatePlanetTexture(prediction);
+                planetMesh.material.map = generateTexturePlanet(prediction);
                 planetMesh.material.needsUpdate = true;
             }
         }
