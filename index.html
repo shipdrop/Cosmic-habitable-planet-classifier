@@ -448,50 +448,6 @@
         // global camera targets
         let isAnalyzing = false;
 
-        // Zoom into the planet during analysis
-        function animateCameraToInspect() {
-            isAnalyzing = true;
-
-            // get planet pos
-            const planetpos = new THREE.Vector3();
-            planetMesh.getWorldPosition(planetpos);
-
-            // animation camera pos close to the planet
-            gsap.to(camera.position , {
-                x: planetMesh.position.x + 0.8,
-                y: planetMesh.position.y + 0.4,
-                z: planetMesh.position.z + 2.0,
-                duration: 3,
-                ease: "power2.inOut",
-                onUpdate: () => {
-                    camera.lookAt(planetpos);
-                }
-            });
-        }
-
-        // Return camera to standard view after analysis
-        function animateCameraToOverview(prediction) {
-            const planetpos = new THREE.Vector3();
-            planetMesh.getWorldPosition(planetpos);
-
-            // determine distance on outcome
-            const target2 = prediction === "Gas Giant" ? 5.0 : 3.5;
-
-            gsap.to(camera.position, {
-                x: 1.2,
-                y: 0.8,
-                z: target2,
-                duration: 1.5,
-                ease: "power2.out",
-                onUpdate: () => {
-                    camera.lookAt(planetpos)
-                },
-                onComplete: () => {
-                    isAnalyzing = false;
-                }
-            });
-        }
-
         // subtle camera breathing
         function updateCameraIdle() {
             if(!isAnalyzing) {
@@ -779,6 +735,67 @@
             }
         }
 
+        // Zoom into the planet during analysis
+        function animateCameraToInspect() {
+            isAnalyzing = true;
+
+            // get planet pos
+            const planetpos = new Three.Vector3();
+            planetMesh.getWorldPosition(planetpos);
+
+            // target position offset from the planet
+            const targetPos = new Three.Vector3(
+                planetpos.x + 0.8,
+                planetpos.y + 0.4,
+                planetpos.z + 2.0
+            );
+
+            // animate camera pos and target lookAt together
+            gsap.to(camera.position, {
+                x: targetPos.x,
+                y: targetPos.y,
+                z: targetPos.z,
+                duration: 3,
+                ease: "power2.inOut"
+            });
+
+            gsap.to(currentLookAt, {
+                x: planetpos.x,
+                y: planetpos.y,
+                z: planetpos.z,
+                duration: 3,
+                ease: "power2.inOut"
+            });
+        }
+
+        // return cam to standard view after analysis
+        function animateCameraToOverview(prediction) {
+            const planetPos = new THREE.Vector3();
+            planetMesh.getWorldPosition(planetPos);
+
+            // determine distance based on prediction result
+            const targetDistance = prediction === "Gas Giant" ? 5.0 : 3.5;
+
+            gsap.to(camera.position, {
+                x: planetPos.x + 1.2,
+                y: planetPos.y + 0.8,
+                z: planetPos.z + targetDistance,
+                duration: 1.5,
+                ease: "power2.out"
+            });
+
+            gsap.to(currentLookAt, {
+                x: planetPos.x,
+                y: planetPos.y,
+                z: planetPos.z,
+                duration: 1.5,
+                ease: "power.out",
+                onComplete: () => {
+                    isAnalyzing = false;
+                }
+            });
+        }
+
         function animate() {
             requestAnimationFrame(animate);
 
@@ -827,16 +844,20 @@
                     const dynaLerp = Math.min(Math.max(orbitSpeed * 6, 0.08), 0.3);
                     camera.position.lerp(targetCameraPos, dynaLerp);
                     currentLookAt.lerp(targetLookAt, dynaLerp);
+
                 } else if (cameraMode === 'star') {
                     targetLookAt.set(0, 0, 0);
                     targetCameraPos.set(0, 0, 15);
                     camera.position.lerp(targetCameraPos, 0.05);
                     currentLookAt.lerp(targetLookAt, 0.05);
+
                 } else {
                     targetLookAt.set(0, 0, 0);
                     targetCameraPos.set(0, 25, 45);
-                    camera.position.lerp(targetCameraPos, 0.05);
-                    currentLookAt.lerp(targetLookAt, 0.05);
+                    if (!isAnalyzing) {
+                        camera.position.lerp(targetCameraPos, 0.05);
+                        currentLookAt.lerp(targetLookAt, 0.05);
+                    }
                 }
             }
 
