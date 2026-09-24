@@ -448,6 +448,16 @@
         // global camera targets
         let isAnalyzing = false;
 
+        function animateCameraToInspect() {
+            isAnalyzing = true;
+            setCameraView('planet');
+        }
+
+        function animateCameraToOverview(prediction) {
+            setCameraView('overview');
+            isAnalyzing = false;
+        }
+
         // subtle camera breathing
         function updateCameraIdle() {
             if(!isAnalyzing) {
@@ -733,67 +743,6 @@
                 pointLight.color.lerp(targetStarColor, 0.2);
                 planetMesh.material.color.lerp(targetPlanetColor, 0.2);
             }
-        }
-
-        // Zoom into the planet during analysis
-        function animateCameraToInspect() {
-            isAnalyzing = true;
-
-            // get planet pos
-            const planetpos = new THREE.Vector3();
-            planetMesh.getWorldPosition(planetpos);
-
-            // target position offset from the planet
-            const targetPos = new THREE.Vector3(
-                planetpos.x + 0.8,
-                planetpos.y + 0.4,
-                planetpos.z + 2.0
-            );
-
-            // animate camera pos and target lookAt together
-            gsap.to(camera.position, {
-                x: targetPos.x,
-                y: targetPos.y,
-                z: targetPos.z,
-                duration: 3,
-                ease: "power2.inOut"
-            });
-
-            gsap.to(currentLookAt, {
-                x: planetpos.x,
-                y: planetpos.y,
-                z: planetpos.z,
-                duration: 3,
-                ease: "power2.inOut"
-            });
-        }
-
-        // return cam to standard view after analysis
-        function animateCameraToOverview(prediction) {
-            const planetPos = new THREE.Vector3();
-            planetMesh.getWorldPosition(planetPos);
-
-            // determine distance based on prediction result
-            const targetDistance = prediction === "Gas Giant" ? 5.0 : 3.5;
-
-            gsap.to(camera.position, {
-                x: planetPos.x + 1.2,
-                y: planetPos.y + 0.8,
-                z: planetPos.z + targetDistance,
-                duration: 1.5,
-                ease: "power2.out"
-            });
-
-            gsap.to(currentLookAt, {
-                x: planetPos.x,
-                y: planetPos.y,
-                z: planetPos.z,
-                duration: 1.5,
-                ease: "power.out",
-                onComplete: () => {
-                    isAnalyzing = false;
-                }
-            });
         }
 
         function animate() {
