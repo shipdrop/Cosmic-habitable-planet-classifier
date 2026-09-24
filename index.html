@@ -589,99 +589,81 @@
             }
         }
 
-        function generateTexturePlanet(type) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 1024;
-            canvas.height = 512;
-            const ctx = canvas.getContext('2d');
+        // canvas and texture in memory for high-perfomance live rendering
+        const liveCanvas = document.createElement('canvas');
+        liveCanvas.width = 512;
+        liveCanvas.height = 256;
+        const liveCtx = liveCanvas.getContext('2d');
+        const liveTexture = new THREE.CanvasTexture(liveCanvas);
 
-            if (type === "Habitable Canadidate") {
-                // deep ocean background
-                ctx.fillStyle = '#0a3d62';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+        function updateLivePlanetTexture(mass, radius, period, temp) {
+            // calculate color bends / temp controls heat hue
+            const tempRatio = Math.max(0, Math.min(1, (temp - 2000) / 8000));
+            const heatRed = Math.floor(tempRatio * 255);
+            const coldBlue = Math.floor((1 - tempRatio) * 255);
 
-                // Green landmasses
-                ctx.fillStyle = '#2ed573';
-                for (let i = 0; i < 40; i++) {
-                    ctx.beginPath();
-                    const x = Math.random() * canvas.width;
-                    const y = canvas.height * 0.2 + Math.random() * (canvas.height * 0.6);
-                    const radius = 40 + Math.random() * 80;
-                    ctx.arc(x, y, radius, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-
-                // shallow coastal reel accents
-                ctx.fillStyle = '#7bed9f';
-                for (let i = 0; i < 20; i++) {
-                    ctx.beginPath();
-                    const x = Math.random() * canvas.width;
-                    const y = canvas.height * 0.25 + Math.random() * (canvas.height * 0.5);
-                    ctx.arc(x, y, 20 + Math.random() * 30, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-
-                // White polar Caps
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, canvas.width, 45);
-                ctx.fillRect(0, canvas.height - 45, canvas.width, 45);
-
-            } else if (type === "Gas Giant") {
-                // high-contrast Atmospheric Bands
-                const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                grad.addColorStop(0.0, '#ffbe76');
-                grad.addColorStop(0.2, '#f0932b');
-                grad.addColorStop(0.4, '#ffbe76');
-                grad.addColorStop(0.5, '#badc58');
-                grad.addColorStop(0.7, '#e056fd');
-                grad.addColorStop(1.0, '#686de0');
-                ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                // Storm EYe
-                ctx.fillStyle = '#eb4b4b';
-                ctx.beginPath();
-                ctx.ellipse(canvas.width * 0.6, canvas.height * 0.55, 70, 35, 0, 0, Math.PI * 2);
-                ctx.fill();
-
+            // draw base terrain
+            if (radius >= 2.5) {
+                // Gas giant
+                const grad = liveCtx.createLinearGradient(0, 0, 0, liveCanvas.height);
+                grad.addColorStop(0.0 `rgb(${heatRed}, 120, ${coldBlue})`);
+                grad.addcolorStop(0.3, `rgb(220, ${Math.floor(mass * 10)}, 100)`);
+                grad.addColorStop(0.6, `rgb(${heatRed}, 180, ${coldBlue})`);
+                grad.addColorStop(1.0, `rgb(50, 50, ${coldBlue})`);
+                liveCtx.fillStyle = grad;
+                liveCtx.fillRect(0, 0, liveCanvas.width, liveCanvas.height);
             } else {
-                // Scorched / Rocky Basalt With Lava Cracks
-                ctx.fillStyle = '#1e272e';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Crater Noise
-                ctx.fillStyle = '#485460';
-                for (let i = 0; i < 80; i++) {
-                    ctx.beginPath();
-                    ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 5 + Math.random() * 25, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+                // Rocky / unhabitable / habitable
+                liveCtx.fillStyle = `rgb(10, ${Math.floor(tempRatio * 100)}, ${Math.floor((1 - tempRatio) * 200)})`;
+                liveCtx.fillRect(0, 0, liveCanvas.width, liveCanvas.height);
 
-                // Lava / molten vein accents
-                ctx.strokeStyle = '#ff4d4d';
-                ctx.lineWidth = 3;
-                for (let i = 0; i < 12; i++) {
-                    ctx.beginPath();
-                    let startX = Math.random() * canvas.width;
-                    let startY = Math.random() * canvas.height;
-                    ctx.moveTo(startX, startY);
-                    ctx.lineTo(startX + (Math.random() - 0.5) * 200, startY + (Math.random() - 0.5) * 200);
+                // landmass scaled based on mass input
+                liveCtx.fillStyle = `rgb(${heatRed}, ${Math.floor(200 - tempRatio * 150)}, 80)`;
+                const continentCount = Math.floor(mass * 4);
+                for (let i = 0; i < continentCount; i++) {
+                    liveCtx.beginPath();
+                    const x = (i * 90 + mass * 20) % liveCanvas.width;
+                    const y = (i * 50 + period * 0.5) % liveCanvas.height;
+                    liveCtx.arc(x, y, 30 + radius * 10, 0, Math.PI * 2);
+                    liveCtx.fill();
                 }
             }
 
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.needsUpdate = true;
-            return texture;
-        }
+            // signal three.js to re-upload
+            liveTexture.needsUpdate = true;
 
-        // Variable to track current visual state
-        let currentTextureType = "";
-
-        function UpdatePlanetMaterial(prediction) {
-            if (typeof planetMesh !== 'undefined' && planetMesh.material) {
-                planetMesh.material.map = generateTexturePlanet(prediction);
+            // apply texture if already not
+            if (typeof planetMesh !== 'undefined' && planetMesh && planetMesh.material.map !== liveTexture) {
+                planetMesh.material.map = liveTexture;
                 planetMesh.material.needsUpdate = true;
             }
+        }
+
+        function handleSliderInput() {
+            const mass = parseFloat(document.getElementById('mass')?.value || 1.0);
+            const radius = parseFloat(document.getElementById('radius')?.value || 1.0);
+            const period = parseFloat(document.getElementById('period')?.value || 365.25);
+            const temp = parseFloat(document.getElementById('star-temp')?.value || 5770);
+
+            // Update HUD text labels
+            const massVal = document.getElementById('mass-val');
+            const radiusVal = document.getElementById('radius-val');
+            const periodVal = document.getElementById('period-val');
+            const tempVal = document.getElementById('star-temp-val');
+
+            if (massVal) massVal.innerText = `${mass} M⊕`;
+            if (radiusVal) radiusVal.innerText = `${radius} R⊕`;
+            if (periodVal) periodVal.innerText = `${period} Days`;
+            if (tempVal) tempVal.innerText = `${temp} K`;
+
+            // live mesh scaling 
+            if (typeof planetMesh !== 'undefined' && planetMesh) {
+                const scaleFactor = Math.max(0.4, Math.min(radius * 0.7, 3.0));
+                planetMesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
+            }
+
+            // live texture change
+            updateLivePlanetTexture(mass, radius, period, temp);
         }
 
         function createStarfield() {
@@ -923,7 +905,7 @@
                 statusBadge.querySelector('.status-text').innerText = "SYSTEM ONLINE";
 
                 //Update 3D Texture of planet
-                UpdatePlanetMaterial(data.prediction);
+                updateLivePlanetTexture(data.prediction);
 
                 // render classification results
                 resultDiv.classList.remove('analyzing-pulse');
