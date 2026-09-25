@@ -22,13 +22,16 @@
             box-sizing: border-box;
         }
 
-        body {
+        html ,body {
             margin: 0;
             padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto; /* enable vertical scrolling */
             font-family: 'Space Grotesk', sans-serif;
             color: #fff;
             background-color: #030305;
-            overflow-x: hidden;
         }
 
         /* 3D canvas container */
@@ -38,26 +41,36 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 1;
+            z-index: -1; /* keeps canvas behind all UI */
+            pointer-events: auto;
         }
 
         /* FLOAting HUD */
         .hud-layer {
             position: absolute;
-            top: 0px;
-            left: 0px;
-            width:100%;
-            height: 100%;
-            z-index: 2;
-            pointer-events: none; 
+            z-index: 10;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             padding: 30px;
+            box-sizing: border-box;
+            pointer-events: none;
         }
 
         .interactive {
             pointer-events: auto; /* Allow interaction with buttons and inputs */
+        }
+
+        #analytics-section {
+            position: relative;
+            z-index: 10;
+            background: #0a0a10;
+            padding: 60px 20px;
+            color: #fff;
+            text-align: center;
+            border-top: 1px solid rgba(0, 240, 255, 0.2);
+            pointer-events: auto;
         }
 
         .header {
@@ -424,9 +437,19 @@
             <div class="hint-bar">
                 🖱️ Left Click + Drag on background to rotate system
             </div>
-
         </div>
-     </div>
+    </div>
+
+     <!-- analytics / graph section -->
+    <section id="analytics-section" style="padding: 40px 20px; background: #0a0a10; color: #fff; text-align: center;">
+        <h2 style="font-family: monospace; letter-spacing: 2px; color: #00f0ff;">PLANET MASS VS. ORBITAL PERIOD</h2>
+        <p style="font-size: 0.9rem; color: #a1a1aa; margin-bottom: 20px;">Comparing your planet with known exoplanets classes.</p>
+
+        <div style="max-width: 800px; margin: 0 auto; position: relative; background: rgba(18, 18, 26, 0.8); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2);">
+            <canvas id="exoplanetChart"></canvas>
+        </div>
+    </section>
+
 
      <script>
         let scene, camera, renderer;
@@ -581,6 +604,9 @@
                     playUISound('tick'); // plays the sound
                 });
             });
+
+            // initialize chart.js
+            initChart();
 
             // start the loop
             animate();
