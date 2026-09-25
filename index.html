@@ -458,22 +458,12 @@
             isAnalyzing = true;
             setCameraView('planet');
 
-            // switch to glowing hologram wireframe during analysis
-            if (!planetMat) {
-                planetMat = planetMesh.material;
-            }
-
-            planetMesh.material = scanPlanetMat;
         }
 
         function animateCameraToOverview(prediction) {
             setCameraView('overview');
             isAnalyzing = false;
 
-            // restore standard surface mat
-            if (planetMesh && planetMat) {
-                planetMesh.material = planetMat;
-            }
         }
 
         function init3D() {
