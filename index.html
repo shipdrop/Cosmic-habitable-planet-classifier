@@ -459,9 +459,11 @@
             setCameraView('planet');
 
             // switch to glowing hologram wireframe during analysis
-            if (planetMesh) {
-                planetMesh.material = scanPlanetMat;
+            if (!planetMat) {
+                planetMat = planetMesh.material;
             }
+
+            planetMesh.material = scanPlanetMat;
         }
 
         function animateCameraToOverview(prediction) {
@@ -469,7 +471,7 @@
             isAnalyzing = false;
 
             // restore standard surface mat
-            if (planetMesh) {
+            if (planetMesh && planetMat) {
                 planetMesh.material = planetMat;
             }
         }
