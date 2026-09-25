@@ -563,14 +563,27 @@
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('resize', onWindowResize);
 
-            updateSimulation();
+            const sliders = document.querySelectorAll('input[type=range]');
+            sliders.forEach(slider => {
+                slider.addEventListener('input', () => {
+                    updateSimulation(); // updates scales and orbit values
+                    playUISound('tick'); // plays the sound
+                });
+            });
+
+            // start the loop
             animate();
         }
 
         // UI SFX Audio setup
-        const audioCtx = new (window.AudioContext || window.webKitAudioContext)();
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
 
         function playUISound(type) {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
@@ -607,7 +620,7 @@
                 osc.type ='sine';
                 osc.frequency.setValueAtTime(523.25, now); // c5
                 osc.frequency.setValueAtTime(659.25, now + 0.12); // e5
-                gain.gain.setValueAtTime(0.88, now);
+                gain.gain.setValueAtTime(0.08, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
                 osc.start(now);
                 osc.stop(now + 0.5);
