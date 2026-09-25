@@ -419,7 +419,7 @@
 
      <script>
         let scene, camera, renderer;
-        let starMesh, planetMesh, systemGroup, starGlowMesh, pointLight;
+        let starMesh, planetMesh, systemGroup, starGlowMesh, pointLight, scanPlanetMat, planetMat;
         let orbitAngle = 0;
         let orbitRadius = 18;
         let orbitSpeed = 0.02;
@@ -460,7 +460,7 @@
 
             // switch to glowing hologram wireframe during analysis
             if (planetMesh) {
-                planetMesh.material = scanPlanetMat
+                planetMesh.material = scanPlanetMat;
             }
         }
 
