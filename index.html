@@ -539,13 +539,7 @@
             planetMesh = new THREE.Mesh(planetGeo, planetMat);
             systemGroup.add(planetMesh);
 
-            // Scan holographic material
-            const scanPlanetMat = new THREE.MeshBasicMaterial({
-                color: 0x00f0ff,
-                wireframe: true,
-                transparent: true,
-                opacity: 0.8,
-            });
+            
 
             // 9. ORbit Ring
             const ringGeo = new THREE.RingGeometry(orbitRadius - 0.1, orbitRadius + 0.1, 64);
@@ -588,31 +582,42 @@
 
             const now = audioCtx.currentTime;
 
-            if (type === 'analyzing') {
-                // low scanning pitch hum
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(120, now);
-                osc.frequency.exponentialRampToValueAtTime(60, now + 0.3);
-                gain.gain.setValueAtTime(0.05, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-                osc.start(now);
-                osc.stop(now + 0.3);
-            }
-            else if (type === 'success') {
-                // high chime for habitable candidate
+            if (type == 'tick') {
+                // high pitched UI clicked when tweaking sliders
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(523.25, now); // C5
-                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
-                gain.gain.setValueAtTime(0.1, now);
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.exponentialRampToValueAtTime(400, now + 0.03);
+                gain.gain.setValueAtTime(0.02, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+                osc.start(now);
+                osc.stop(now + 0.03);
+
+            } else if (type === 'analyzing') {
+                // sci-fi rising sweep
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(140, now);
+                osc.frequency.exponentialRampToValueAtTime(480, now + 0.4); 
+                gain.gain.setValueAtTime(0.04, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
                 osc.start(now);
                 osc.stop(now + 0.4);
-            }
-            else if (type === 'offline') {
-                // low buzz error
+                
+            } else if (type === 'success') {
+                // two-tone chord chime
+                osc.type ='sine';
+                osc.frequency.setValueAtTime(523.25, now); // c5
+                osc.frequency.setValueAtTime(659.25, now + 0.12); // e5
+                gain.gain.setValueAtTime(0.88, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                osc.start(now);
+                osc.stop(now + 0.5);
+
+            } else if (type === 'offline') {
+                // low distorted error sfx
                 osc.type = 'square';
-                osc.frequency.setValueAtTime(90, now);
-                gain.gain.setValueAtTime(0.08, now);
+                osc.frequency.setValueAtTime(110, now);
+                osc.frequency.setValueAtTime(80, now + 0.1);
+                gain.gain.setValueAtTime(0.06, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
                 osc.start(now);
                 osc.stop(now + 0.3);
@@ -830,6 +835,7 @@
             btn = btn || document.querySelector('.btn-analyze');
             const resultDiv = document.getElementById('result');
             const statusBadge = document.getElementById('system-status');
+            const hudOverlay = document.getElementById('hud-overlay');
 
             const payload = {
                 pl_bmasse: parseFloat(document.getElementById('mass').value),
@@ -843,6 +849,7 @@
             // start cinematic zoom-in
             animateCameraToInspect();
             playUISound('analyzing');
+            if (hudOverlay) hudOverlay.classList.add('active-scan');
             
             // UI feedback: loading state
             playUISound('analyzing');
@@ -885,27 +892,35 @@
                 if (data.prediction === "Habitable Candidate") {
                     playUISound('success');
                     resultDiv.style.background = "#047857";
+                    resultDiv.style.borderColor = "#10b981";
                 } else if (data.prediction === "Gas Giant") {
                     playUISound('analyzing');
                     resultDiv.style.background = "#b45309";
+                    resultDiv.style.borderColor = "#f59e0b";
                 } else {
                     playUISound('analyzing');
                     resultDiv.style.background = "#1d4ed8";
+                    resultDiv.style.borderColor = "#3b82f6";
                 }
 
             } catch (error) {
                 console.error("API Error:", error);
                 playUISound('offline');
 
+                // reset camera if api fails
+                animateCameraToOverview();
+
                 // update status to indicate offline on error
                 statusBadge.classList.add('offline');
                 statusBadge.querySelector('.status-text').innerText = "SYSTEM OFFLINE";
 
                 resultDiv.classList.remove('analyzing-pulse');
-                resultDiv.style.background = "#e60026";
+                resultDiv.style.background = "rgba(230, 0, 38, 0.2)";
+                resultDiv.style.borderColor = "#e60026";
                 resultDiv.innerHTML = `FEED OFFLINE<br><span style="font-size: 0.75rem; font-weight:normal;">Backend waking up. Try again later...</span>`;    
             } finally {
-                // restore btn state
+                // restore btn state & deactivate hud-overlay
+                if (hudOverlay) hudOverlay.classList.remove('active-scan');
                 btn.disabled = false;
                 btn.innerText = "RUN ML ANALYSIS";
             }
