@@ -440,8 +440,14 @@
 
             if (mode === 'overview') {
                 targetCameraPos.set(0, 25, 45);
+                // standard wide angle
+                gsap.to(camera, { fov: 75, duration: 1.2, onUpdate: () => camera.updateProjectionMatrix() });
             } else if (mode === 'star') {
                 targetCameraPos.set(0, 5, 15);
+                gsap.to(camera, { fov: 60, duration: 1.2, onUpdate: () => camera.updateProjectionMatrix() });
+            } else if (mode === 'planet') {
+                // tight cinematic zoom lens
+                gsap.to(camera, {fov: 45, duration: 1.2, onUpdate: () => camera.updateProjectionMatrix() });
             }
         } // planet mode is inside animate()
 
@@ -451,20 +457,20 @@
         function animateCameraToInspect() {
             isAnalyzing = true;
             setCameraView('planet');
+
+            // switch to glowing hologram wireframe during analysis
+            if (planetMesh) {
+                planetMesh.material = scanPlanetMat
+            }
         }
 
         function animateCameraToOverview(prediction) {
             setCameraView('overview');
             isAnalyzing = false;
-        }
 
-        // subtle camera breathing
-        function updateCameraIdle() {
-            if(!isAnalyzing) {
-                const time = Date.now() * 0.0005;
-                camera.position.x += Math.sin(time) * 0.002;
-                camera.position.y += Math.cos(time * 0.8) * 0.002;
-                camera.lookAt(planetMesh.position);
+            // restore standard surface mat
+            if (planetMesh) {
+                planetMesh.material = planetMat;
             }
         }
 
@@ -539,7 +545,15 @@
             const planetGeo = new THREE.SphereGeometry(1, 32, 32);
             const planetMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.4, metalness: 0.1});
             planetMesh = new THREE.Mesh(planetGeo, planetMat);
-            systemGroup.add(planetMesh)
+            systemGroup.add(planetMesh);
+
+            // Scan holographic material
+            const scanPlanetMat = new THREE.MeshBasicMaterial({
+                color: 0x00f0ff,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.8,
+            });
 
             // 9. ORbit Ring
             const ringGeo = new THREE.RingGeometry(orbitRadius - 0.1, orbitRadius + 0.1, 64);
