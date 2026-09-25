@@ -15,6 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         * {
@@ -354,6 +355,16 @@
     <!-- 3D engine container -->
     <div id="canvas-container"></div>
 
+    <!-- analytics / graph section -->
+    <section id="analytics-section" style="padding: 40px 20px; background: #0a0a10; color: #fff; text-align: center;">
+        <h2 style="font-family: monospace; letter-spacing: 2px; color: #00f0ff;">PLANET MASS VS. ORBITAL PERIOD</h2>
+        <p style="font-size: 0.9rem; color: #a1a1aa; margin-bottom: 20px;">Comparing your planet with known exoplanets classes.</p>
+
+        <div style="max-width: 800px; margin: 0 auto; position: relative; background: rgba(18, 18, 26, 0.8); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2);">
+            <canvas id="exoplanetChart"></canvas>
+        </div>
+    </section>
+
     <!-- HUD interface  -->
      <div class="hud-layer">
         
@@ -573,6 +584,77 @@
 
             // start the loop
             animate();
+        }
+
+        let exoplanetChart;
+
+        async function initChart() {
+            const ctx = document.getElementById('exoplanetChart').getContext('2d');
+
+            // create initial chart
+            exoplanetChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'NASA Exoplanet Archive Data (Loading...)',
+                            data: [], // starting empty
+                            backgroundColor: 'rgba(0, 240, 255, 0.35)',
+                            borderColor: 'rgba(0, 240, 255, 0.7)',
+                            borderWidth: 1,
+                            pointRadius: 5
+                        },
+                        {
+                            label: 'Your Own Planet',
+                            data: [{
+                                x: parseFloat(document.getElementById('period').value) || 30,
+                                y: parseFloat(document.getElementById('mass').value) || 5.0
+                            }],
+                            backgroundColor: '#ff0055',
+                            borderColor: '#fffff',
+                            borderWidth: 2,
+                            pointRadius: 9,
+                            pointHoverRadius: 11
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Orbital Period (Days)', color: '#00f0ff' },
+                            ticks: { color: '#a1a1aa' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Mass (Earth Masses)', color: '#00f0ff' },
+                            ticks: { color: '#a1a1aa' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#ffffff' }
+                        }
+                    }
+                }
+            });
+
+            // fetch live refernce points from backend
+            try {
+                const response = await fetch('/archive-data');
+                const result = await response.json();
+
+                if (result.planets && result.planets.length > 0) {
+                    exoplanetChart.data.datasets[0].label = 'NASA Exoplanet Archive Data';
+                    exoplanetChart.data.datasets[0].data = result.planets;
+                    exoplanetChart.update();
+                }
+            } catch (err) {
+                console.warn("Could not retrieve archive data from API", err);
+            }  
         }
 
         // UI SFX Audio setup

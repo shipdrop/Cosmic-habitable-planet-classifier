@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from model_trainer import predict_custom_planet, train_exoplanet_model
 from pydantic import BaseModel
+import data_loader
 import joblib
 import os
 
@@ -50,6 +51,12 @@ class PlanetData(BaseModel):
 @app.get("/")
 def home():
     return {"status": "Cosmic API is online"}
+
+@app.get("/archive-data")
+def get_prediction(data: PlanetData):
+    prediction, probabilities = predict_custom_planet(
+        model, feature_cols, data.pl_bmasse, data.pl_rade, data.pl_orbper, data.st_teff
+    )
 
 @app.post("/predict")
 def get_prediction(data: PlanetData):
