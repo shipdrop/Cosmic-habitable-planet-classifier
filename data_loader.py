@@ -36,25 +36,30 @@ def engineer_features(df):
     return df
 
 def get_sample_planets(limit=100):
-    """Returns Formatted {x, y} coords for chart.js scatter plot."""
+    """Returns Formatted {x, y, name} coords for chart.js scatter plot."""
     df = fetch_nasa_data()
 
     if df.empty:
         # fallback dataset if api crashes
         return [
-            {"x": 365, "y": 1.0},
-            {"x": 687, "y": 0.11},
-            {"x": 4333, "y": 317.8},
-            {"x": 88, "y": 0.055}
+            {"x": 365, "y": 1.0, "name": "Earth"},
+            {"x": 687, "y": 0.11, "name": "Mars"},
+            {"x": 4333, "y": 317.8, "name": "Jupiter"},
+            {"x": 88, "y": 0.055, "name": "Mercury"},
+            {"x": 2.47, "y": 4.2, "name": "55 Cancri e"},
+            {"x": 11.2, "y": 1.24, "name": "Proxima Centuri b"}
         ]
 
     # filter out invalid numbers for logarithmic programs axes
     valid_df = df[(df['pl_orbper'] > 0) & (df['pl_bmasse'] > 0)].head(limit)
 
     #format for Chart.js
-    points = [
-        {"x": float(row['pl_orbper']), "y": float(row['pl_bmasse'])}
-        for _, row in valid_df.iterrows()
-    ]
+    points = []
+    for _, row in valid_df.iterrows():
+        points.append({
+            "x": float(row['pl_orbper']),
+            "y": float(row['pl_bmasse']),
+            "name": str(row['pl_name']) if 'pl_name' in row and pd.notna(row['pl_name']) else "Unknown Planet"
+        })
 
     return points

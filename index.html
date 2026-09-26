@@ -652,12 +652,12 @@
                             label: 'NASA Exoplanet Archive',
                             data: [
                                 // fallback points
-                                { x: 365, y: 1.0 }, // earth
-                                { x: 687, y: 0.11 }, // mars
-                                { x: 4333, y: 317.8 }, // jupiter
-                                { x: 88, y: 0.055 }, // mercury
-                                { x: 10, y: 5.0 }, // super-earth
-                                { x: 3.5, y: 200 }, // hot jupiter
+                                { x: 365, y: 1.0, name: "Earth" }, 
+                                { x: 687, y: 0.11, name: "Mars" }, 
+                                { x: 4333, y: 317.8, name: "Jupiter" }, 
+                                { x: 87.97, y: 0.055, name: "Mercury" }, 
+                                { x: 2.47, y: 4.2, name: "55 Cancri e" }, 
+                                { x: 11.2, y: 1.24, name: "Proxima Centauri b" }, 
                             ],
                             backgroundColor: 'rgba(0, 240, 255, 0.4)',
                             borderColor: 'rgba(0, 240, 255, 0.8)',
@@ -697,8 +697,16 @@
                         }
                     },
                     plugins: {
-                        legend: {
-                            labels: { color: '#ffffff', font: { family: 'monospace' } }
+                        legend: { labels: { color: '#ffffff' } },
+                        // custom hover tooltip
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const point = context.raw;
+                                    const planetName = point.name || context.dataset.label;
+                                    return `${planetName}: Mass = ${point.y} M⊕, Period = ${point.x} Days`;
+                                }
+                            }
                         }
                     }
                 }
@@ -706,17 +714,24 @@
 
             // fetch data from FastAPI endpoint
             try {
-                const response = await fetch('/archive-data');
-                if (!response.ok) {
-                    const json = await response.json();
-                    if (json.planets && json.planets.length > 0) {
-                        exoplanetChart.data.datasets[0].data = json.planets;
-                        exoplanetChart.update();
-                    }
+                //adjust port
+                const API_URL = window.location.origin.includes('http')
+                    ? '/archive-data'
+                    : 'http://127.0.0.1:8000/archive-data';
+
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const json = await response.json();
+
+                if (json.planets && json.planets.length > 0) {
+                    exoplanetChart.data.datsets[0].data = json.planets;
+                    exoplanetChart.update();
                 }
             } catch (err) {
-                console.warn("Using fallback chart dataset (backend offline or starting up):", err);
+                console.warn("Using fallback dataset (API connection failed)", err);
             }
+
         }
 
         // UI SFX Audio setup
