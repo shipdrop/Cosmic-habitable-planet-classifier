@@ -714,14 +714,10 @@
 
             // fetch data from FastAPI endpoint
             try {
-                //adjust port
-                const API_URL = window.location.origin.includes('http')
-                    ? '/archive-data'
-                    : 'http://127.0.0.1:8000/archive-data';
-
-                const response = await fetch(API_URL);
+                // fetch static json file
+                const response = await fetch('./archive-data.json');
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
+                
                 const json = await response.json();
 
                 if (json.planets && json.planets.length > 0) {
