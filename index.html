@@ -371,26 +371,16 @@
             padding: 60px 20px;
             color: #fff;
             text-align: center;
-            background: transparent;
+            background: transparent !important;
             border-top: 1px solid rgba(0, 240, 255, 0.2);
             pointer-events: auto;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         /* 2d static star effect overlay */
         #analysis-section::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                radial-gradient(1px 1px at 10px 30px, #fff, rgba(0, 0, 0, 0)),
-                radial-gradient(1px 1px at 50px 160px, #fff, rgba(0, 0, 0, 0)),
-                radial-gradient(1.5px 1.5px at 120px 70px, rgba(0, 240, 255, 0.8), rgba(0, 0, 0, 0)),
-                radial-gradient(1px 1px at 250px 210px, #fff, rgba(0, 0, 0, 0)),
-                radial-gradient(2px 2px at 380px 120px, rgba(255, 255, 255, 0.9), rgba(0, 0, 0, 0));
-            background-repeat: repeat;
-            background-size: 400px 400px;
-            opacity: 0.4;
-            pointer-events: none;
+            display: none !important;
         }
 
 
@@ -474,7 +464,7 @@
         <h2 style="font-family: monospace; user-select: none; -webkit-user-select: none; letter-spacing: 2px; color: #00f0ff;">PLANET MASS VS. ORBITAL PERIOD</h2>
         <p style="font-size: 0.9rem; color: #a1a1aa; margin-bottom: 20px; user-select: none; -webkit-user-select: none;">Comparing your planet with known exoplanets classes.</p>
 
-        <div style="max-width: 800px; margin: 0 auto; position: relative; background: rgba(18, 18, 26, 0.8); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2);">
+        <div style="max-width: 800px; margin: 0 auto; position: relative; background: rgba(10, 10, 16, 0.65); backdrop-filter: blur(12px); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2);">
             <canvas id="exoplanetChart"></canvas>
         </div>
     </section>
