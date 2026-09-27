@@ -485,7 +485,7 @@
 
         // Dynamic Camera Target Via
         let targetCameraPos = new THREE.Vector3(0, 25, 45);
-        let targetLookAt = new THREE.Vector3(0, 0, 0,);
+        let targetLookAt = new THREE.Vector3(0, 0, 0);
         let currentLookAt = new THREE.Vector3(0, 0, 0);
         let cameraMode = 'overview';
 
@@ -671,7 +671,7 @@
                                 x: parseFloat(document.getElementById('period').value) || 30,
                                 y: parseFloat(document.getElementById('mass').value) || 5.0
                             }],
-                            backgroundColor : '#ff055',
+                            backgroundColor : '#ff0055',
                             borderColor: '#ffffff',
                             borderWidth: 2,
                             pointRadius: 9,
@@ -715,13 +715,13 @@
             // fetch data from FastAPI endpoint
             try {
                 // fetch static json file
-                const response = await fetch('./archive-data.json');
+                const response = await fetch('https://rikimii-exoplanet-api.hf.space/archive-data');
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 const json = await response.json();
 
                 if (json.planets && json.planets.length > 0) {
-                    exoplanetChart.data.datsets[0].data = json.planets;
+                    exoplanetChart.data.datasets[0].data = json.planets;
                     exoplanetChart.update();
                 }
             } catch (err) {

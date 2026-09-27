@@ -53,10 +53,12 @@ def home():
     return {"status": "Cosmic API is online"}
 
 @app.get("/archive-data")
-def get_prediction(data: PlanetData):
-    prediction, probabilities = predict_custom_planet(
-        model, feature_cols, data.pl_bmasse, data.pl_rade, data.pl_orbper, data.st_teff
-    )
+def get_archive_data():
+    try:
+        planets = data_loader.get_sample_planets(limit=100)
+        return {"planets": planets}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.post("/predict")
 def get_prediction(data: PlanetData):
