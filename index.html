@@ -70,7 +70,6 @@
             justify-content: space-between;
             padding: 25px;
             box-sizing: border-box;
-            position: none;
         }
 
         .interactive {
@@ -379,6 +378,14 @@
             pointer-events: auto;
             user-select: none;
             -webkit-user-select: none;
+
+            transform: translateZ(0);
+            will-change: transform;
+        }
+
+        #analysis-section > div {
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
         /* 2d static star effect overlay */
@@ -475,7 +482,7 @@
         <div style="max-width: 1100px; margin: 0 auto; display: flex; gap: 24px; background: rgba(10, 10, 16, 0.75); backdrop-filter: blur(12px); padding: 24px; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2); text-align: left; box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);">
 
             <!-- Left Box: Chart Container (Flex Ratio 2)-->
-            <div style="flex: 2; min-width: 0; position: relative; height: 380px;">
+            <div style="flex: 2; min-width: 0; position: relative; height: 380px; overflow: hidden;">
                 <canvas id="exoplanetChart"></canvas>
             </div>
 
