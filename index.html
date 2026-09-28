@@ -721,7 +721,7 @@
                         tooltip: {
                             callbacks: {
                                 label: (ctx) => {
-                                    const pt = context.raw;
+                                    const pt = ctx.raw;
                                     return `${pt.name || 'Planet'}: Period ${pt.x} days, Mass ${pt.y} M⊕`;
                                 }
                             }
