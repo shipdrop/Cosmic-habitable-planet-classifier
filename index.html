@@ -41,6 +41,7 @@
             position: relative;
             width: 100vw;
             height: 100vh;
+            overflow: hidden;
         }
 
         /* 3D canvas container */
@@ -67,6 +68,7 @@
             justify-content: space-between;
             padding: 25px;
             box-sizing: border-box;
+            pointer-events: none;
         }
 
         .interactive {
@@ -113,7 +115,7 @@
             border-radius: 12px;
             padding: 20px;
             width: 350px;
-            max-height: calc(100vh - 150px);
+            max-height: calc(100vh - 120px);
             overflow-y: auto;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), 0 0 15px rgba(0, 240, 255, 0.1);
             -webkit-user-select: none;
@@ -363,22 +365,17 @@
 
         /* container hold the chart and summary box section */
         .analysis-container {
-            position: absolute;
-            bottom: 25px;
-            left: 395px;
-            right: 25px;
+            position: relative;
             z-index: 10;
-
             display: flex;
             flex-direction: row;
             align-items: stretch;
             justify-content: space-between;
             gap: 1.5rem;
 
-            width: auto;
-            max-width: none;
-            max-height: 280px;
-            margin: 0;
+            width: 90%;
+            max-width: 1200px;
+            margin: 40px auto 60px auto;
 
             padding: 1.25rem;
             background: rgba(10, 10, 20, 0.75);
@@ -386,7 +383,7 @@
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 240, 255, 0.2);
             border-radius: 16px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.37);
             color: #ffffff;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             pointer-events: auto;
@@ -396,14 +393,12 @@
         .chart-wrapper {
             flex: 2;
             position: relative;
-            height: 100%;
-            min-height: 0;
+            min-height: 380px;
             width: 100%;
             background: rgba(15, 23, 42, 0.5);
             border-radius: 12px;
             padding: 1rem;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            overflow-y: auto;
         }
 
         /* make sure canvas spans responsive inside wrapper */
@@ -512,34 +507,6 @@
                 <p>WebGL Real-Time Orbital Mechanics & Classification</p>
             </div>
 
-            <!-- chart and summary container-->
-            <div class="analysis-container interactive" id="analysis-section">
-                <div class="chart-wrapper">
-                    <canvas id="exoplanetChart"></canvas>
-                </div>
-
-                <div class="summary-box">
-                    <div>
-                        <h3>Planet Profile</h3>
-                        <div id="summary-class" class="summary-class">Class: Terrestrial</div>
-                        <p id="summary-description" class="summary-description">
-                            Aligns closely with rock worlds in the Kepler dataset
-                        </p>
-                    </div>
-
-                    <div class="summary-metric">
-                        <div class="metric-card">
-                            <span class="metric-label">Mass</span>
-                            <span id="metric-mass" class="metric-value">5.0 M⊕</span>
-                        </div>
-                        <div class="metric-card">
-                            <span class="metric-label">Orbit</span>
-                            <span id="metric-orbit" class="metric-value">30 Days</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="hud-bottom interactive" style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%">
 
                 <!-- LEFT CONTROL PANEL -->
@@ -586,12 +553,38 @@
                     🖱️ Left Click + Drag on background to rotate system
                 </div>
             </div>
+        
         </div>
-    
-    </div>   
-    
-    
-   
+    </div>
+
+    <!-- chart and summary container-->
+    <div class="analysis-container interactive" id="analysis-section">
+        <div class="chart-wrapper">
+            <canvas id="exoplanetChart"></canvas>
+        </div>
+
+        <div class="summary-box">
+            <div>
+                <h3>Planet Profile</h3>
+                <div id="summary-class" class="summary-class">Class: Terrestrial</div>
+                <p id="summary-description" class="summary-description">
+                    Aligns closely with rock worlds in the Kepler dataset
+                </p>
+            </div>
+
+            <div class="summary-metric">
+                <div class="metric-card">
+                    <span class="metric-label">Mass</span>
+                    <span id="metric-mass" class="metric-value">5.0 M⊕</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Orbit</span>
+                    <span id="metric-orbit" class="metric-value">30 Days</span>
+                </div>
+            </div>
+        </div>
+    </div>
+      
 </body>
 </html>
 
