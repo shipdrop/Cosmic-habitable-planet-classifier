@@ -526,7 +526,7 @@
         let orbitAngle = 0;
         let orbitRadius = 18;
         let orbitSpeed = 0.02;
-        clock = new THREE.Clock();
+        const clock = new THREE.Clock();
 
         // CUstom Mouse drag controls
         let isDragging = false;
@@ -590,8 +590,6 @@
             systemGroup = new THREE.Group();
             scene.add(systemGroup);
 
-            createStarfield();
-
             // 5. Lighting
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
             scene.add(ambientLight);
@@ -638,11 +636,9 @@
 
             // 8. Custom Planet
             const planetGeo = new THREE.SphereGeometry(1, 32, 32);
-            const planetMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.4, metalness: 0.1});
+            planetMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.4, metalness: 0.1});
             planetMesh = new THREE.Mesh(planetGeo, planetMat);
             systemGroup.add(planetMesh);
-
-            
 
             // 9. ORbit Ring
             const ringGeo = new THREE.RingGeometry(orbitRadius - 0.1, orbitRadius + 0.1, 64);
@@ -717,8 +713,8 @@
                         {
                             label: 'Your Custom Planet',
                             data: [{
-                                x: parseFloat(document.getElementById('period').value) || 30,
-                                y: parseFloat(document.getElementById('mass').value) || 5.0
+                                x: parseFloat(document.getElementById('period')?.value) || 30,
+                                y: parseFloat(document.getElementById('mass')?.value) || 5.0
                             }],
                             backgroundColor : '#ff0055',
                             borderColor: '#ffffff',
@@ -897,15 +893,7 @@
             }
         }
 
-        // canvas and texture in memory for high-perfomance live rendering
-        const liveCanvas = document.createElement('canvas');
-        liveCanvas.width = 512;
-        liveCanvas.height = 256;
-        const liveCtx = liveCanvas.getContext('2d');
-        const liveTexture = new THREE.CanvasTexture(liveCanvas);
-
-       
-
+    
         function createStarfield() {
             const starsGeo = new THREE.BufferGeometry();
             const count = 3000;
@@ -1110,7 +1098,7 @@
             const container = document.getElementById('canvas-container');
             if (!container || !camera || !renderer) return;
 
-            const width = container.clientWidth || window.innerHeight;
+            const width = container.clientWidth || window.innerWidth;
             const height = container.clientHeight || window.innerHeight;
 
             camera.aspect = width / height;
@@ -1169,9 +1157,10 @@
                 animateCameraToOverview(data.prediction);
 
                 // updating status badge if it was offline
-                statusBadge.classList.remove('offline');
-                statusBadge.querySelector('.status-text').innerText = "SYSTEM ONLINE";
-
+                if (statusBadge) {
+                    statusBadge.classList.remove('offline');
+                    statusBadge.querySelector('.status-text').innerText = "SYSTEM ONLINE";
+                }
                 
                 // render classification results
                 resultDiv.classList.remove('analyzing-pulse');
