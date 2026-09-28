@@ -757,14 +757,7 @@
             const period = parseFloat(document.getElementById('period').value);
             const temp = parseFloat(document.getElementById('star-temp').value);
 
-            // calculate logic
-            const className = mass > 10 ? "Gas Giant" : "Rocky Planet";
-            const orbitType = period > 100 ? "Outer Orbit" : "Inner Orbit";
-
-            document.getElementById('summary-class').textContent = `Classification: ${className}`;
-            document.getElementById('metric-mass').textContent = `Mass: ${mass}x`;
-            document.getElementById('metric-orbit').textContent = `Orbit: ${orbitType}`;
-
+        
             document.getElementById('mass-val').innerText = mass.toFixed(1);
             document.getElementById('radius-val').innerText = radius.toFixed(1);
             document.getElementById('period-val').innerText = period.toFixed(0);
@@ -798,12 +791,6 @@
                 }
                 pointLight.color.lerp(targetStarColor, 0.2);
                 planetMesh.material.color.lerp(targetPlanetColor, 0.2);
-            }
-
-            // live chart update point
-            if (window.exoplanetChart) {
-                exoplanetChart.data.datasets[1].data[0] = { x: period, y: mass};
-                exoplanetChart.update('none');
             }
 
         }
