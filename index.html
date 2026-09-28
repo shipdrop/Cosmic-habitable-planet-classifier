@@ -35,8 +35,6 @@
             font-family: 'Space Grotesk', sans-serif;
             color: #fff;
             background-color: #030305;
-            overflow-y: auto;
-            overflow-x: hidden;
         }
 
         .hero-viewport {
@@ -365,12 +363,12 @@
 
         /* container hold the chart and summary box section */
         .analysis-container {
-            position: relative;
+            position: absolute;
             z-index: 10;
-            margin-top: calc(100vh - 320px);
-            margin-bottom: 40px;
-            margin-left: auto;
-            margin-right: auto;
+            top: calc(100vh - 270px);
+            left: 25px;
+            right: 25px;
+            bottom: 20px;
 
 
             display: flex;
@@ -379,10 +377,11 @@
             justify-content: space-between;
             gap: 1.5rem;
 
-            width: 90%;
-            max-width: 1200px;
+            width: auto;
+            max-width: none;
+            margin: 0;
 
-            padding: 1.5rem;
+            padding: 1.5rem 1.25rem;
             background: rgba(10, 10, 20, 0.65);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
@@ -392,6 +391,7 @@
             color: #ffffff;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             pointer-events: auto;
+            overflow: hidden;
         }
 
         /* main wrapper for the chart section */
