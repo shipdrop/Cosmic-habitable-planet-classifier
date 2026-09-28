@@ -989,11 +989,21 @@
             document.getElementById('period-val').innerText = period.toFixed(0);
             document.getElementById('temp-val').innerText = temp.toFixed(0);
 
+            // update right summary panel cards
+            const metricMass = document.getElementById('metric-mass');
+            const metricOrbit = document.getElementById('metric-orbit');
+
+            if (metricMass) metricMass.innerText = `${mass.toFixed(1)} M⊕`;
+            if (metricOrbit) metricOrbit.innerText = `${period.toFixed(0)} Days`;
+
             if (planetMesh) {
                 planetMesh.scale.setScalar(radius);
             }
 
             orbitSpeed = (1/ period) * 1.5;
+
+               // update chart point
+            updateChartPoint(period, mass);
 
             if (starMesh && planetMesh) {
                 let targetStarColor = new THREE.Color();
@@ -1018,9 +1028,6 @@
                 pointLight.color.lerp(targetStarColor, 0.2);
                 planetMesh.material.color.lerp(targetPlanetColor, 0.2);
             }
-
-            // update chart point
-            updateChartPoint(period, mass);
 
         }
 
