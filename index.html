@@ -460,14 +460,62 @@
     
     
      <!-- analytics / graph section -->
-    <section id="analytics-section" style="padding: 40px 20px; background: #0a0a10; color: #fff; text-align: center;">
-        <h2 style="font-family: monospace; user-select: none; -webkit-user-select: none; letter-spacing: 2px; color: #00f0ff;">PLANET MASS VS. ORBITAL PERIOD</h2>
-        <p style="font-size: 0.9rem; color: #a1a1aa; margin-bottom: 20px; user-select: none; -webkit-user-select: none;">Comparing your planet with known exoplanets classes.</p>
+    <section id="analysis-section">
+        <h2 style="font-family: monospace; letter-spacing: 2px; color: #00f0ff; user-select: none; -webkit-user-select: none; margin-bottom: 8px;">
+            PLANET MASS VS. ORBITAL PERIOD
+        </h2>
+        <p style="font-size: 0.9rem; color: #a1a1aa; margin-bottom: 25px">
+            Comparing your planet with known exoplanet classes from the NASA Archive. 
+        </p>
 
-        <div style="max-width: 800px; margin: 0 auto; position: relative; background: rgba(10, 10, 16, 0.65); backdrop-filter: blur(12px); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2);">
-            <canvas id="exoplanetChart"></canvas>
+        <!-- Side-by-Side Flex Container-->
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; gap: 24px; background: rgba(10, 10, 16, 0.75); backdrop-filter: blur(12px); padding: 24px; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2); text-align: left; box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);">
+
+            <!-- Left Box: Chart Container (Flex 2)-->
+            <div style="flex: 2px; min-width: 0; position: relative;">
+                <canvas id="exoplanetChart"></canvas>
+            </div>
+
+            <!-- Right Box: NASA Comparison Summary (Flex 1)-->
+            <div id="graph-summary" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; padding-left: 20px; border-left: 1px solid rgba(0, 240, 255, 0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3 style="color: #00f0ff; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; margin: 0;">
+                        ARCHIVE COMPARISON
+                    </h3>
+                    <span id="summary-badge" style="font-size: 0.65rem; background: rgba(0, 240, 255, 0.15); color: #00f0ff; padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.4); font-weight: bold;">
+                        LIVE MATCH
+                    </span>
+                </div>
+
+                <!-- Dynamic Text Context-->
+                <div id="summary-content" style="font-size: 0.85rem; color: #d4d4d8; line-height: 1.6;">
+                    <p id="summary-class" style="font-size: 1rem; font-weight: 700; color: #ffe600; margin-top: 0; margin-bottom: 8px;">
+                        Classification: Super-Earth
+                    </p>
+                    <p id="summary-description" style="color: #a1a1aa; margin-bottom: 15px;">
+                        Calculation nearest dataset matches
+                    </p>
+
+                    <!-- Quick Comparsion Metrics-->
+                    <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px dashed rgba(255, 255, 255, 0.1); padding-top: 12px">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #a1a1aa; font-size: 0.75rem;">MASS vs EARTH</span>
+                            <span id="metric-mass" style="color: #00f0ff; font-weight: bold; font-family: monospace;">5.0x</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #a1a1aa; font-size: 0.75rem;">ORBITAL REGIME</span>
+                            <span id="metric-orbit" style="color: #00f0ff; font-weight: bold; font-family: monospace;">Short-Period</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between">
+                            <span style="color: #a1a1aa; font-size: 0.75rem;">ARCHIVE DENSITY NEARBY:</span>
+                            <span id="metric-density" style="color: #00f0ff; font-weight: bold; font-family: monospace;">High</span>
+                        </div>
+                    </div>
+                </div> 
+            </div> 
+        
         </div>
-    </section>
+      </section>
 
 </body>
 </html>
@@ -732,6 +780,62 @@
 
         }
 
+        function updateSummaryPanel(mass, radius, period, starTemp) {
+            const classElem = document.getElementById('summary-class');
+            const descElem = document.getElementById('summary-description');
+            const massElem = document.getElementById('metric-mass');
+            const orbitElem = document.getElementById('metric-orbit');
+            const densityElem = document.getElementById('metric-density');
+
+            if (!classElem || !descElem) return;
+
+            let planetType = "";
+            let description = "";
+            let orbitRegime = "";
+            let density = "Moderate";
+
+            // 1. Determine Classification & Comparsion
+            if (mass < 0.5) {
+                planetType = "Sub-Earth / Sub-Mercurian";
+                description = "Your world is smaller than Earth, resembling worlds like TRAPPIST-1d or Mars in the NASA archive";
+                density = "Low Density in Archive";
+            } else if (mass >= 0.5 && mass <= 2.0 && radius <= 1.5) {
+                planetType = "Terrestrial (Earth-like)";
+                description = "Aligns closely with rock worlds in the Kepler dataset. Similar mass to Earth and Venus";
+                density = "High Density in Archive";
+            } else if (mass > 2.0 && mass <= 10 && radius <= 2.6) {
+                planetType = "Super-Earth";
+                description = "Massive rocky world. Super-Earths are extremely common in NASA's archive, though absent from our solar system.";
+                density = "Very High Density";
+            } else if (mass > 10.0 && mass <= 50.0 || (radius > 2.5 && radius <= 6.0)) {
+                planetType = "Sub-Neptune / Mini-Neptune";
+                description = "Features a thick volatile envelope. Shares orbital characteristics with Kepler-11 planets.";
+                density = "High Density in Archive";
+            } else {
+                planetType = "Gas Giant / Hot Jupiter";
+                description = "High-mass giant planet. If orbital period is under 10 days, it closely mirrors Hot Jupiters like HD 209458 b.";
+                density = "High Density in Archive";
+            }
+
+            // 2. Determine Orbital Regime
+            if (period < 10) {
+                orbitRegime = "Ultra-Short Period";
+            } else if (period >= 10 && period <= 100) {
+                orbitRegime = "Short-Period";
+            } else if (period > 100 && period <= 365) {
+                orbitRegime = "Intermediate Orbit";
+            } else {
+                orbitRegime = "Long-Period";
+            }
+
+            // 3. Update DOM elements
+            classElem.innerText = `Class: ${planetType}`;
+            descElem.innerText = description;
+            massElem.innerText = `${mass.toFixed(1)} M⊕`;
+            orbitElem.innerText = orbitRegime;
+            densityElem.innerText = density;
+        }
+
         // UI SFX Audio setup
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
@@ -930,6 +1034,8 @@
                 exoplanetChart.data.datasets[1].data[0] = { x: period, y: mass};
                 exoplanetChart.update('none');
             }
+
+            updateSummaryPanel(mass, radius, period, temp);
         }
 
         function animate() {
