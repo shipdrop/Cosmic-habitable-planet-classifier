@@ -429,22 +429,22 @@
 
                     <div class="control-group">
                         <label class="control-label">Planet Mass (Earths) <span id="mass-val">5.0</span></label>
-                        <input type="range" id="mass" min="0.1" max="20" step="0.1" value="5.0" oninput="updateSimulation()">
+                        <input type="range" id="mass" min="0.1" max="20" step="0.1" value="5.0" autocomplete="off" data-form-type="other" oninput="updateSimulation()">
                     </div>
 
                     <div class="control-group">
                         <label class="control-label">Planet Radius (Earth Radii) <span id="radius-val">1.5</span></label>
-                        <input type="range" id="radius" min="0.3" max="5.0" step="0.1" value="1.5" oninput="updateSimulation()">
+                        <input type="range" id="radius" min="0.3" max="5.0" step="0.1" value="1.5" autocomplete="off" data-form-type="other" oninput="updateSimulation()">
                     </div>
 
                     <div class="control-group">
                         <label class="control-label">Orbital Period (Days) <span id="period-val">30</span></label>
-                        <input type="range" id="period" min="1" max="500" step="1" value="30" oninput="updateSimulation()">
+                        <input type="range" id="period" min="1" max="500" step="1" value="30" autocomplete="off" data-form-type="other" oninput="updateSimulation()">
                     </div>
 
                     <div class="control-group">
                         <label class="control-label">Stellar Temp (Kelvin) <span id="temp-val">5800</span></label>
-                        <input type="range" id="star-temp" min="2000" max="10000" step="100" value="5800" oninput="updateSimulation()">
+                        <input type="range" id="star-temp" min="2000" max="10000" step="100" value="5800" autocomplete="off" data-form-type="other" oninput="updateSimulation()">
                     </div>
 
                     <div class="control-group">
@@ -482,7 +482,7 @@
         <div style="max-width: 1100px; margin: 0 auto; display: flex; gap: 24px; background: rgba(10, 10, 16, 0.75); backdrop-filter: blur(12px); padding: 24px; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2); text-align: left; box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);">
 
             <!-- Left Box: Chart Container (Flex Ratio 2)-->
-            <div style="flex: 2; min-width: 0; position: relative; height: 380px; overflow: hidden;">
+            <div style="flex: 2; min-width: 0; position: relative; height: 380px; contain: strict;">
                 <canvas id="exoplanetChart"></canvas>
             </div>
 
@@ -492,9 +492,9 @@
                     <h3 style="color: #00f0ff; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; margin: 0;">
                         ARCHIVE COMPARISON
                     </h3>
-                    <span id="summary-badge" style="font-size: 0.65rem; background: rgba(0, 240, 255, 0.15); color: #00f0ff; padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.4); font-weight: bold;">
-                        LIVE MATCH
-                    </span>
+                    <p id="summary-class">Classification: Loading...</p>
+                    <p id="metric-mass">Mass: 5.0x</p>
+                    <p id="metric-orbit">Orbit: Terrestrial</p>
                 </div>
 
                 <!-- Dynamic Text Content-->
@@ -794,8 +794,7 @@
             const massElem = document.getElementById('metric-mass');
             const orbitElem = document.getElementById('metric-orbit');
             const densityElem = document.getElementById('metric-density');
-
-            if (!classElem || !descElem) return;
+        
 
             let planetType = "";
             let description = "";
@@ -815,7 +814,7 @@
                 planetType = "Super-Earth";
                 description = "Massive rocky world. Super-Earths are extremely common in NASA's archive, though absent from our solar system.";
                 density = "Very High Density";
-            } else if (mass > 10.0 && mass <= 50.0 || (radius > 2.5 && radius <= 6.0)) {
+            } else if ((mass > 10.0 && mass <= 50.0) || (radius > 2.5 && radius <= 6.0)) {
                 planetType = "Sub-Neptune / Mini-Neptune";
                 description = "Features a thick volatile envelope. Shares orbital characteristics with Kepler-11 planets.";
                 density = "High Density in Archive";
@@ -837,11 +836,11 @@
             }
 
             // 3. Update DOM elements
-            classElem.innerText = `Class: ${planetType}`;
-            descElem.innerText = description;
-            massElem.innerText = `${mass.toFixed(1)} M⊕`;
-            orbitElem.innerText = orbitRegime;
-            densityElem.innerText = density;
+            classElem.textContent = `Class: ${planetType}`;
+            descElem.textContent = description;
+            massElem.textContent = `${mass.toFixed(1)} M⊕`;
+            orbitElem.textContent = orbitRegime;
+            if (densityElem) densityElem.textContent = density;
         }
 
         // UI SFX Audio setup
@@ -994,6 +993,14 @@
             const period = parseFloat(document.getElementById('period').value);
             const temp = parseFloat(document.getElementById('star-temp').value);
 
+            // calculate logic
+            const className = mass > 10 ? "Gas Giant" : "Rocky Planet";
+            const orbitType = period > 100 ? "Outer Orbit" : "Inner Orbit";
+
+            document.getElementById('summary-class').textContent = `Classification: ${className}`;
+            document.getElementById('metric-mass').textContent = `Mass: ${mass}x`;
+            document.getElementById('metric-orbit').textContent = `Orbit: ${orbitType}`;
+
             document.getElementById('mass-val').innerText = mass.toFixed(1);
             document.getElementById('radius-val').innerText = radius.toFixed(1);
             document.getElementById('period-val').innerText = period.toFixed(0);
@@ -1030,7 +1037,7 @@
             }
 
             // live chart update point
-            if (exoplanetChart && exoplanetChart.data.datasets[1]) {
+            if (window.exoplanetChart) {
                 exoplanetChart.data.datasets[1].data[0] = { x: period, y: mass};
                 exoplanetChart.update('none');
             }
