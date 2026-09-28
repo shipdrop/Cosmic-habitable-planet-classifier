@@ -17,6 +17,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+
+
+    
     <style>
         * {
             box-sizing: border-box;
@@ -364,6 +367,117 @@
             transform: scale(0.98);
         }
 
+        /* container hold the chart and summary box section */
+        .analysis-container {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            justify-content: space-between;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1200px;
+            margin: 1rem auto;
+            padding: 1.5rem;
+            background: rgba(10, 10, 20, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            color: #ffffff;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        /* main wrapper for the chart section */
+        .chart-wrapper {
+            flex: 2;
+            position: relative;
+            min-height: 350px;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* make sure canvas spans responsive inside wrapper */
+        .chart-wrapper canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* summary box on the right side of the graph/chart */
+        .summary-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: rgba(20, 30, 50, 0.6);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 12px;
+        }
+
+        .summary-box h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            letter-spacing: 0.05rem;
+            color: #00f0ff;
+            text-transform: uppercase;
+        }
+
+        /* text metrics formatting */
+        .summary-class {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .summary-description {
+            font-size: 0.8rem;
+            color: #a1a1aa;
+            line-height: 1.4;
+        }
+
+        .summary-metric {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: auto;
+        }
+
+        .metric-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            border-left: 3px solid #00f0ff;
+        }
+
+        .metric-label {
+            display: block;
+            font-size: 0.7rem;
+            color: #71717a;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        /* phone responsive fallback: stack summary underneath chart on small screens */
+        @media (max-width: 768px) {
+            .analysis-container {
+                flex-direction: column;
+            }
+
+            .chart-wrapper {
+                min-height: 280px;
+            }
+        }
+
     
 
 
@@ -389,6 +503,34 @@
                     </div>
                 </div>
                 <p>WebGL Real-Time Orbital Mechanics & Classification</p>
+            </div>
+
+            <!-- chart and summary container-->
+            <div class="analysis-container interactive" id="analysis-section">
+                <div class="chart-wrapper">
+                    <canvas id="exoplanetChart"></canvas>
+                </div>
+
+                <div class="summary-box">
+                    <div>
+                        <h3>Planet Profile</h3>
+                        <div id="summary-class" class="summary-class">Class: Terrestrial</div>
+                        <p id="summary-description" class="summary-description">
+                            Aligns closely with rock worlds in the Kepler dataset
+                        </p>
+                    </div>
+
+                    <div class="summary-metric">
+                        <div class="metric-card">
+                            <span class="metric-label">Mass</span>
+                            <span id="metric-mass" class="metric-value">5.0 M⊕</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Orbit</span>
+                            <span id="metric-orbit" class="metric-value">30 Days</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="hud-bottom interactive" style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%">
@@ -465,6 +607,10 @@
         let currentLookAt = new THREE.Vector3(0, 0, 0);
         let cameraMode = 'overview';
 
+        // global chart instance 
+        let chartInstance = null;
+        let archiveData = [];
+
         function setCameraView(mode) {
             cameraMode = mode;
 
@@ -494,6 +640,85 @@
             setCameraView('overview');
             isAnalyzing = false;
 
+        }
+
+        // CHart initalization and updates
+        async function initChart() {
+            const chartCanvas = document.getElementById('exoplanetChart');
+            if (!chartCanvas) return;
+            const ctx = chartCanvas.getContext('2d');
+
+            // load archive NASA dataset
+            try {
+                const response = await fetch('https://rikimii-exoplanet-api.hf.space/archive-data');
+                if (response.ok) {
+                    const result = await response.json();
+                    archiveData = result.data || result;
+                }
+            } catch (err) {
+                console.warn('using fallback archive dataset:', err);
+                archiveData [
+                    { x: 10, y: 1.2 }, { x: 30, y: 5.0 }, { x: 100, y: 12.0 },
+                    { x: 365, y: 1.0}, { x: 5, y: 0.8 }, { x: 200, y: 15.0 }
+                ];
+            }
+
+            const initalMass = parseFloat(document.getElementById('mass').value);
+            const initalPeriod = parseFloat(document.getElementById('period').value);
+
+            // single chart instance init.
+            chartInstance = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Known Exoplanets',
+                            data: archiveData,
+                            backgroundColor: 'rgba(0, 240, 255, 0.3)',
+                            borderColor: 'rgba(0, 240, 255, 0.6)',
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Current Target',
+                            data: [{ x: initalPeriod, y: initalMass}],
+                            backgroundColor: '#ff0055',
+                            borderColor: '#ffffff',
+                            borderWidth: 2,
+                            pointRadius: 8,
+                            pointHoverRadius: 10
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Orbital Period (Days)', color: '#a1a1aa' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1) '},
+                            ticks: { color: '#a1a1aa' }
+                        },
+                        y: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Mass (Earths)', color: '#a1a1aa' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#a1a1aa' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#ffffff' } }
+                    }
+                }
+            });
+        }
+
+        function updateChartPoint(period, mass) {
+            if (!chartInstance) return;
+            chartInstance.data.datasets[1].data = [{ x: period, y: mass }];
+            chartInstance.update('none') // update without flickering
         }
 
         function init3D() {
@@ -598,6 +823,7 @@
             });
 
             // initialize chart.js
+            initChart();
          
             // update simulation
             updateSimulation();
@@ -793,6 +1019,9 @@
                 planetMesh.material.color.lerp(targetPlanetColor, 0.2);
             }
 
+            // update chart point
+            updateChartPoint(period, mass);
+
         }
 
         function animate() {
@@ -882,6 +1111,7 @@
             const resultDiv = document.getElementById('result');
             const statusBadge = document.getElementById('system-status');
             const hudOverlay = document.getElementById('hud-overlay');
+            const SummaryClass = document.getElementById('summary-class');
 
             const payload = {
                 pl_bmasse: parseFloat(document.getElementById('mass').value),
@@ -935,6 +1165,9 @@
                 // render classification results
                 resultDiv.classList.remove('analyzing-pulse');
                 resultDiv.innerHTML = `CLASSIFICATION: ${data.prediction.toUpperCase()}`;
+
+                // update summary box text
+                if (summaryClass)
 
                 if (data.prediction === "Habitable Candidate") {
                     playUISound('success');
