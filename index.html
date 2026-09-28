@@ -652,14 +652,19 @@
             try {
                 const response = await fetch('https://rikimii-exoplanet-api.hf.space/archive-data');
                 if (response.ok) {
-                    const result = await response.json();
-                    archiveData = result.data || result;
+                    const rawData = await response.json();
+                    // handle both plain arry or object wraps
+                    archiveData = Array.isArray(rawData) ? rawData : (rawData.data || []);
                 }
             } catch (err) {
-                console.warn('using fallback archive dataset:', err);
-                archiveData [
-                    { x: 10, y: 1.2 }, { x: 30, y: 5.0 }, { x: 100, y: 12.0 },
-                    { x: 365, y: 1.0}, { x: 5, y: 0.8 }, { x: 200, y: 15.0 }
+                console.warn('API fetch failed. Using fallback archive dataset:', err);
+                archiveData= [
+                    { x: 365, y: 1.0, name: "Earth" },
+                    { x: 687, y: 0.11, name: "Mars" },
+                    { x: 4333, y: 317.8, name: "Jupiter" },
+                    { x: 88, y: 0.055, name: "Mercury" },
+                    { x: 2.47, y: 4.2, name: "55 Cancri e" },
+                    { x: 11.2, y: 1.24, name: "Proxima Centauri b" }
                 ];
             }
 
@@ -709,7 +714,15 @@
                         }
                     },
                     plugins: {
-                        legend: { labels: { color: '#ffffff' } }
+                        legend: { labels: { color: '#ffffff' } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const pt = context.raw;
+                                    return `${pt.name || 'Planet'}: Period ${pt.x} days, Mass ${pt.y} M⊕`;
+                                }
+                            }
+                        }
                     }
                 }
             });

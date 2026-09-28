@@ -35,7 +35,7 @@ def engineer_features(df):
     df['planet_type'] = df.apply(label_planet, axis=1)
     return df
 
-def get_sample_planets(limit=100):
+def get_sample_planets(limit=150):
     """Returns Formatted {x, y, name} coords for chart.js scatter plot."""
     df = fetch_nasa_data()
 
@@ -51,7 +51,7 @@ def get_sample_planets(limit=100):
         ]
 
     # filter out invalid numbers for logarithmic programs axes
-    valid_df = df[(df['pl_orbper'] > 0) & (df['pl_bmasse'] > 0)].head(limit)
+    valid_df = df[(df['pl_orbper'] > 0.1) & (df['pl_bmasse'] > 0.01)].head(limit)
 
     #format for Chart.js
     points = []

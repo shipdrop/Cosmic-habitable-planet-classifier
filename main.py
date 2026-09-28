@@ -55,7 +55,7 @@ def home():
 @app.get("/archive-data")
 def get_archive_data():
     try:
-        planets = data_loader.get_sample_planets(limit=100)
+        planets = data_loader.get_sample_planets(limit=150)
         return {"planets": planets}
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
