@@ -702,7 +702,7 @@
 
         let exoplanetChart;
 
-        async function initChart() {
+        async function initChart(predictionData = null) {
             const canvasEl = document.getElementById('exoplanetChart');
             if (!canvasEl) {
                 console.error("Canvas element #exoplanetChart not found in HTML!");
@@ -710,6 +710,10 @@
             }
 
             const ctx = canvasEl.getContext('2d');
+
+            if (exoplanetChart) {
+                exoplanetChart.destroy();
+            }
 
             // create chart structure
             exoplanetChart = new Chart(ctx, {
