@@ -1111,7 +1111,7 @@
             const resultDiv = document.getElementById('result');
             const statusBadge = document.getElementById('system-status');
             const hudOverlay = document.getElementById('hud-overlay');
-            const SummaryClass = document.getElementById('summary-class');
+            const summaryClass = document.getElementById('summary-class');
 
             const payload = {
                 pl_bmasse: parseFloat(document.getElementById('mass').value),
@@ -1167,7 +1167,9 @@
                 resultDiv.innerHTML = `CLASSIFICATION: ${data.prediction.toUpperCase()}`;
 
                 // update summary box text
-                if (summaryClass)
+                if (summaryClass) {
+                    summaryClass.innerText = `Class: ${data.prediction}`;
+                }
 
                 if (data.prediction === "Habitable Candidate") {
                     playUISound('success');
