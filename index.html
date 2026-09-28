@@ -655,7 +655,9 @@
                     const rawData = await response.json();
                     console.log("fetched archive data:", rawData);
                     // handle both plain arry or object wraps
-                    archiveData = Array.isArray(rawData) ? rawData : (rawData.data || []);
+                    archiveData = rawData.planets || rawData.data || (Array.isArray(rawData) ? rawData : []);
+
+                    console.log("Successfully extracted archive points", archiveData.length);
                 }
             } catch (err) {
                 console.warn('API fetch failed. Using fallback archive dataset:', err);
@@ -718,7 +720,7 @@
                         legend: { labels: { color: '#ffffff' } },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: (ctx) => {
                                     const pt = context.raw;
                                     return `${pt.name || 'Planet'}: Period ${pt.x} days, Mass ${pt.y} M⊕`;
                                 }
