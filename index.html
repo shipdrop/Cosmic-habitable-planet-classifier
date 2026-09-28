@@ -398,7 +398,8 @@
         .chart-wrapper {
             flex: 2;
             position: relative;
-            min-height: 350px;
+            height: 100%;
+            min-height: 0;
             width: 100%;
             background: rgba(15, 23, 42, 0.5);
             border-radius: 12px;
@@ -425,6 +426,7 @@
             border: 1px solid rgba(0, 240, 255, 0.3);
             border-radius: 12px;
             overflow-y: auto;
+            pointer-events: none;
         }
 
         .summary-box h3 {
