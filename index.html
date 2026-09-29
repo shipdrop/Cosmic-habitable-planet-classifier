@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Exoplanet 3D Orbit Simulator</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9rem font-size=%2290%22>🪐</text></svg>">
 
@@ -502,6 +502,69 @@
             }
         }
 
+        /* Phone responsive layout */
+        @media screen and (max-width: 768px) {
+            html, body {
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+
+            /* make header fit the smaller screen */
+            .header h1 {
+                font-size: 1.25rem;
+            }
+            .header p {
+                font-size: 0.75rem;
+            }
+
+            /* stack HUD controls vertically */
+            .hud-bottom {
+                flex-direction: column !important;
+                align-items: stretch !important;
+            }
+
+            /* transforms main control card into a scrollable sheet */
+            .panel {
+                width: 100% !important;
+                max-height: 40vh;
+                overflow-y: auto;
+                border-radius: 12px 12px 0 0;
+                padding: 12px;
+                box-sizing: border-box;
+            }
+
+            /* Increase hit box for sliders */
+            input[type=range] {
+                height: 32px;
+                margin: 4px 0;
+            }
+
+            /* compact preset buttons */
+            .btn-cam {
+                flex: 1;
+                padding: 10px 4px;
+                font-size: 0.75rem;
+            }
+
+            /* position analysis section below the viewport */
+            .analysis-container {
+                position: relative  !important;
+                width: 100% !important;
+                right: auto;
+                bottom: auto;
+                margin-top: 12px;
+                box-sizing: border-box;
+            }
+
+            .chart-wrapper {
+                height: 220px;
+            }
+
+            .hint-bar {
+                display: none;
+            }
+        }
+
     
 
 
@@ -856,7 +919,7 @@
             // 3. Renderer
             renderer = new THREE.WebGLRenderer({ antialias: true});
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
 
             // 4. System Group
@@ -923,7 +986,6 @@
             // Event listeners for Custom drag-controls
             window.addEventListener('mousedown', (e) => {
                 if(e.target.closest('.interactive')) return;
-
                 isDragging = true;
                 previousMousePosition = { x: e.clientX, y: e.clientY };
             });
@@ -941,6 +1003,46 @@
                     updateSimulation(); // updates scales and orbit values
                     playUISound('tick'); // plays the sound
                 });
+            });
+
+            // Touch listerners for phone //
+            window.addEventListener('touchstart', (e) => {
+                if (e.target.closest('.interactive')) return;
+                if (e.touches.length === 1) {
+                    isDragging = true;
+                    previousMousePosition = {
+                        x: e.touches[0].clientX,
+                        y: e.touches[0].clientY
+                    };
+                }
+            }, {passive: true });
+
+            window.addEventListener('touchmove', (e) => {
+                if (!isDragging || cameraMode !== 'overview' || e.touches.length !== 1) return;
+                
+                const deltaMove = {
+                    x: e.touches[0].clientX - previousMousePosition.x,
+                    y: e.touches[0].clientY - previousMousePosition.y
+                };
+
+                const deltaRotationQuaternion = new THREE.Quaternion()
+                    .setFromEuler(new THREE.Euler(
+                        (deltaMove.y * 0.005),
+                        (deltaMove.x * 0.005),
+                        0,
+                        'XYZ'
+                    ));
+
+                systemGroup.quaternion.multiplyQuaternions(deltaRotationQuaternion, systemGroup.quaternion);
+
+                previousMousePosition = {
+                    x: e.touches[0].clientX,
+                    y: e.touches[0].clientY
+                };
+            }, { passive: true });
+
+            window.addEventListener('touchend', () => {
+                isDragging = false;
             });
 
             // initialize chart.js
