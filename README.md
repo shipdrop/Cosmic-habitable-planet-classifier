@@ -1,3 +1,13 @@
+---
+title: Exoplanet API
+emoji: 🪐
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_file: app.py
+pinned: false
+---
+
 # Exoplanet 3D Engine & ML Classifier 
 
 A real-time WebGL interactive orbital mechanics simulator paired with a machine learning classification engine to visualize and predict exoplanetary habitability and surface characteristics.
