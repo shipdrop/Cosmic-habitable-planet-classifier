@@ -12,11 +12,11 @@ pinned: false
 
 A real-time WebGL interactive orbital mechanics simulator paired with a machine learning classification engine to visualize and predict exoplanetary habitability and surface characteristics.
 
-![Exoplanet Engine Preview](https://shipdrop.github.io/Cosmic-habitable-planet-classifier/)
+[Live Demo Site](https://shipdrop.github.io/Cosmic-habitable-planet-classifier/)
 
 also Check out my starDance challenge page
 
-![Stardance pagelink](https://stardance.hackclub.com/projects/22678)
+[Stardance pagelink](https://stardance.hackclub.com/projects/22678)
 
 ---
 
