@@ -565,6 +565,97 @@
             }
         }
 
+        .info-container {
+            max-width: 1100px;
+            margin: 0 auto 2rem auto;
+            padding: 2rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255 255, 0.1);
+            border-radius: 12px;
+            color: #e2ebf0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            backdrop-filter: blur(8px);
+            z-index: 10;
+        }
+
+        .info-hanger {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(0, 255, 136, 0.15);
+            color: #0f8;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .info-header h1 {
+            font-size: 2.25rem;
+            margin: 0.25rem 0;
+            color: #ffffff;
+        }
+
+        .tagline {
+            color: #94a3b8;
+            font-size: 1.05rem;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .card-icon {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card h2 {
+            font-size: 1.25rem;
+            color: #38bdf8;
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+        }
+
+        .info-card p {
+            color: #cbd5e1;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .usage-steps {
+            padding-left: 1.2rem;
+            margin: 0;
+            color: #cbd5e1;
+        }
+
+        .usage-steps li {
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .usage-steps li strong {
+            color: #ffffff;
+        }
+
+
     
 
 
@@ -573,6 +664,37 @@
 <body>
 
     <div class="hero-viewport">
+
+        <!-- Info Section-->
+        <section id="project-info-section" class="info-container">
+            <header class="info-header">
+                <span class="badge">V2.0 Science & Simulation Suite</span>
+                <h1>Cosmic Exoplanet Analyzer</h1>
+                <p class="tagline">Exoplore Hypothetical and real exoplanets through real-time 3D Physics and machine learning</p>
+            </header>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="card-icon">🌌</div>
+                    <h2>What is the Purpose?</h2>
+                    <p>
+                      Raw astronomical datasets are often hard to visualize. This engines combines
+                      <strong>astrophysical calculations</strong> and <strong>machine learning predictions</strong>
+                      to translate parameters into visual 3D worlds.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-icon">🚀</div>
+                    <h2>How Do You Use It?</h2>
+                    <ol class="usage-steps">
+                      <li><strong>Adjust Parameters:</strong> Use sliders to change mass, radius, distance, and temperature.</li>
+                      <li><strong>Observe the Goldilocks Zone:</strong> Watch the green orbital ring shift dynamically.</li>
+                      <li><strong>Analyze Habitability:</strong> Check the breakdown index and environmental logs.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
 
 
         <!-- 3D engine container -->
