@@ -427,6 +427,7 @@
             letter-spacing: 0.05rem;
             color: #00f0ff;
             text-transform: uppercase;
+            user-select: none;
         }
 
         /* text metrics formatting */
@@ -434,12 +435,14 @@
             font-size: 1rem;
             font-weight: 600;
             color: #10b981;
+            user-select: none;
         }
 
         .summary-description {
             font-size: 0.8rem;
             color: #a1a1aa;
             line-height: 1.4;
+            user-select: none;
         }
 
         .summary-metric {
@@ -449,11 +452,28 @@
             margin-top: auto;
         }
 
+        .summary-details {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 2px solid #00f0ff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #a1a1aa;
+        }
+
+        .summary-details strong {
+            color: #00f0ff;
+        }
+
+        .summary-details span {
+            color: #ffffff;
+        }
+
         .metric-card {
             background: rgba(0, 0, 0, 0.3);
             padding: 0.5rem 0.75rem;
             border-radius: 8px;
             border-left: 3px solid #00f0ff;
+            user-select: none;
         }
 
         .metric-label {
@@ -461,12 +481,14 @@
             font-size: 0.7rem;
             color: #71717a;
             text-transform: uppercase;
+            user-select: none;
         }
 
         .metric-value {
             font-size: 0.9rem;
             font-weight: bold;
             color: #ffffff;
+            user-select: none;
         }
 
         /* phone responsive fallback: stack summary underneath chart on small screens */
@@ -565,13 +587,20 @@
 
         <div class="summary-box">
             <div>
-                <h3>Planet Profile</h3>
-                <div id="summary-class" class="summary-class">Class: Terrestrial</div>
+                <h3>Your Planet Summary</h3>
+                <div id="summary-class" class="summary-class">Class: Class: Pending Analysis</div>
                 <p id="summary-description" class="summary-description">
-                    Aligns closely with rock worlds in the Kepler dataset
+                    Adjust the parameters above and execute the ML analysis to generate a planetary profile summary.
                 </p>
             </div>
 
+            <!---->
+            <div class="summary-details" style="display: flex; flex-direction: column; gap: 6px; margin: 12px 0; font-size: 0.85rem;">
+                <div><strong>Atmospheric Type:</strong> <span id="summary-atmo">--</span></div>
+                <div><strong>Surface Potential:</strong> <span id="summary-surface">--</span></div>
+            </div>
+
+            <!-- Primary Metrics Grid-->
             <div class="summary-metric">
                 <div class="metric-card">
                     <span class="metric-label">Mass</span>
@@ -640,6 +669,81 @@
             setCameraView('overview');
             isAnalyzing = false;
 
+        }
+
+        const PLANET_PROFILES = {
+            "Habitable Candidate": {
+                badgeColor: "#047857",
+                borderColor: "#10b981",
+                atmo: "Nitrogen-Oxygen / Water Vapor",
+                surface: "Liquid Oceans & Solid Crust",
+                description: "Located within the circumstellar habitable zone. Planetary temperature and mass favor stable liquid surface water and a balanced atmosphere capable of sustaining organic processes",
+                soundtype: "success"
+            },
+            "Gas Giant": {
+                badgeColor: "#b45309",
+                borderColor: "#f59e0b",
+                atmo: "Dense Hydrogen & Helium Cloud Layers",
+                surface: "No solid Surface (Metallic Core)",
+                description: "Massive gas envelope with imense atmospheric pressure. Highly turbulent cloud bands and violent storms dominate and upper planetary weather systems.",
+                soundtype: "analyzing"
+            },
+            "Terrestrial / Rocky": {
+                badgeColor: "#1d4ed8",
+                borderColor: "#3b82f6",
+                atmo: "Thin Silicate or Carbon Dioxide Shell",
+                surface: "Cratered Silicate & Basaltic Rock",
+                description: "Compact rocky world lacking heavy gas envelopes. High density suggests a metallic silicate core with arid or vulcanized surface conditions.",
+                soundtype: "analyzing"
+            },
+            "Neptunian / Ice Giant": {
+                badgeColor: "#6d28d9",
+                borderColor: "8b5cf6",
+                atmo: "Methane, Ammonia, and Hydrogen Mantle",
+                surface: "Supercritical Fluid / Ice Ocean",
+                description: "Intermediate mass planet wrapped in thick icy volatiles. Strong atmosphereic methane leads to distinct coloration and deep fluidic mantle layers.",
+                soundtype: "analyzing"
+            },
+            "Super Earth": {
+                badgeColor: "#0284c7",
+                borderColor: "#38bdf8",
+                atmo: "High-Density Volatile Atmosphere",
+                surface: "Compressed Lithosphere / Tectonic Plates",
+                description: "Significantly larger than Earth but lighter than ice giants. May retain high surface gravity with potent geothermal activity and dense cloud cover.",
+                soundtype: "success"
+            },
+            "Unknown / Outlier": {
+                badgeColor: "#374151",
+                borderColor: "#6b7280",
+                atmo: "Uncharacterized / Exotic",
+                surface: "Indetermine Structure",
+                description: "Target characteristics fall outside standard exoplanetary clustering data. Requires high-resolution spectroscopy for detailed atmospheric model fitting.",
+                soundtype: "offline"
+            },
+        };
+
+        function applySummaryProfile(className) {
+            const summaryClass = document.getElementById('summary-class');
+            const summaryAtmo = document.getElementById('summary-atmo');
+            const summarySurface = document.getElementById('summary-surface');
+            const summaryDesc = document.getElementById('summary-description');
+            const resultDiv = document.getElementById('result');
+
+            //fallback to unknown profile if key is not found
+            const profile = PLANET_PROFILES[className] || PLANET_PROFILES["Unknown / Outlier"];
+
+            if (summaryClass) summaryClass.innerText = `Class: ${className}`;
+            if (summaryAtmo) summaryAtmo.innerText = profile.atmo;
+            if (summarySurface) summarySurface.innerText = profile.surface;
+            if (summaryDesc) summaryDesc.innerText = profile.description;
+
+            if (resultDiv) {
+                resultDiv.innerText = `CLASSIFICATION: ${className.toUpperCase()}`;
+                resultDiv.innerText = profile.badgeColor;
+                resultDiv.innerText = profile.borderColor;
+            }
+
+            playUISound(profile.soundtype);
         }
 
         // CHart initalization and updates
@@ -1187,7 +1291,7 @@
                 
                 // render classification results
                 resultDiv.classList.remove('analyzing-pulse');
-                resultDiv.innerHTML = `CLASSIFICATION: ${data.prediction.toUpperCase()}`;
+                applySummaryProfile(data.prediction);
 
                 // update summary box text
                 if (summaryClass) {
