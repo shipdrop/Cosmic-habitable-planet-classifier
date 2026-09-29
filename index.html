@@ -453,7 +453,7 @@
         }
 
         .summary-details {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255 0.03);
             border-left: 2px solid #00f0ff;
             padding: 8px 12px;
             border-radius: 4px;
@@ -467,7 +467,7 @@
         .summary-details span {
             color: #ffffff;
         }
-
+        
         .metric-card {
             background: rgba(0, 0, 0, 0.3);
             padding: 0.5rem 0.75rem;
@@ -1291,6 +1291,8 @@
                 
                 // render classification results
                 resultDiv.classList.remove('analyzing-pulse');
+                resultDiv.innerHTML = `CLASSIFICATION: ${data.prediction.toUpperCase()}`;
+
                 applySummaryProfile(data.prediction);
 
                 // update summary box text
