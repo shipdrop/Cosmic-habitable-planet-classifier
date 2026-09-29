@@ -467,7 +467,7 @@
         .summary-details span {
             color: #ffffff;
         }
-        
+
         .metric-card {
             background: rgba(0, 0, 0, 0.3);
             padding: 0.5rem 0.75rem;
@@ -739,8 +739,9 @@
 
             if (resultDiv) {
                 resultDiv.innerText = `CLASSIFICATION: ${className.toUpperCase()}`;
-                resultDiv.innerText = profile.badgeColor;
-                resultDiv.innerText = profile.borderColor;
+                resultDiv.style.backgroundColor = profile.badgeColor || '#10b981';
+                resultDiv.style.borderColor = profile.borderColor || '#10b981';
+                resultDiv.style.color = '#ffffff';
             }
 
             playUISound(profile.soundtype);
@@ -1291,7 +1292,6 @@
                 
                 // render classification results
                 resultDiv.classList.remove('analyzing-pulse');
-                resultDiv.innerHTML = `CLASSIFICATION: ${data.prediction.toUpperCase()}`;
 
                 applySummaryProfile(data.prediction);
 
