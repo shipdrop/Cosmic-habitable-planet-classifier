@@ -567,15 +567,15 @@
 
         .info-container {
             position: relative;
-            max-width: 1100px;
-            margin: 0 auto 2rem auto;
+            max-width: 1200px;
+            margin: 2rem auto;
             padding: 2rem 1.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255 255, 0.1);
-            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 16px;
             color: #e2ebf0;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            backdrop-filter: blur(8px);
+            font-family: 'Inter', system-ui, sans-serif;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             z-index: 10;
         }
 
@@ -586,7 +586,7 @@
 
         .badge {
             display: inline-block;
-            padding: 0.25rem 0.75rem;
+            padding: 0.35rem 0.85rem;
             background: rgba(0, 255, 136, 0.15);
             color: #0f8;
             border: 1px solid rgba(0, 255, 136, 0.3);
@@ -640,10 +640,16 @@
             font-size: 0.95rem;
         }
 
-        .usage-steps {
+        .usage-steps, .audience-list {
             padding-left: 1.2rem;
             margin: 0;
             color: #cbd5e1;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .audience-list li {
+            margin-bottom: 0.5rem;
         }
 
         .usage-steps li {
@@ -656,6 +662,25 @@
             color: #ffffff;
         }
 
+        .scroll-prompt {
+            text-align: center;
+            margin-top: 2rem;
+            color: #00f0ff;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .scroll-arrow {
+            font-size: 1.5rem;
+            animation: bounce 1.5s infinite;
+            margin-top: 0.25rem;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(6px); }
+        }
+
 
     
 
@@ -664,9 +689,7 @@
 </head>
 <body>
 
-    <div class="hero-viewport">
-
-        <!-- Info Section-->
+    <!-- Info Section-->
         <section id="project-info-section" class="info-container">
             <header class="info-header">
                 <span class="badge">V2.0 Science & Simulation Suite</span>
@@ -676,7 +699,6 @@
 
             <div class="info-grid">
                 <div class="info-card">
-                    <div class="card-icon">🌌</div>
                     <h2>What is the Purpose?</h2>
                     <p>
                       Raw astronomical datasets are often hard to visualize. This engines combines
@@ -686,7 +708,6 @@
                 </div>
 
                 <div class="info-card">
-                    <div class="card-icon">🚀</div>
                     <h2>How Do You Use It?</h2>
                     <ol class="usage-steps">
                       <li><strong>Adjust Parameters:</strong> Use sliders to change mass, radius, distance, and temperature.</li>
@@ -694,9 +715,24 @@
                       <li><strong>Analyze Habitability:</strong> Check the breakdown index and environmental logs.</li>
                     </ol>
                 </div>
+
+                <div class="info-card">
+                    <h2>Who Can Use It & For What?</h2>
+                    <ul class="audience-list">
+                        <li><strong>Students & Educators:</strong> Interactive physics demonstration of Kepler's laws, stellar radiation, and habitability zones.</li>
+                        <li><strong>Space Enthusiasts:</strong> Test "what-if" planetary scenarios and discover real NASA exoplanet datasets.</li>
+                        <li><strong>Developers:</strong> Explore open-source WebGL (Three.js) rendering and FastAPI ML integration.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="scroll-prompt">
+                <span>Scroll Down To Explore Simulation</span>
+                <div class="scroll-arrow">↓</div>
             </div>
         </section>
-
+    
+    <div class="hero-viewport">
 
         <!-- 3D engine container -->
         <div id="canvas-container"></div>
