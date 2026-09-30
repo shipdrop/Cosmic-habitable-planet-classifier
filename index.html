@@ -1731,11 +1731,15 @@
                 const data = await response.json();
 
                 // safely override
+                const densityRatio = mass / Math.pow(radius, 3) // 1.0 = Earth density
                 let finalPrediction = data.prediction;
+
                 if(stellarTemp > 7500) {
                     finalPrediction = "Non-Habitable (Too Hot)";
                 } else if (stellarTemp < 2000) {
                     finalPrediction = "Non-Habitable (Tidal Lock)";
+                } else if (radius > 1.8 || densityRatio < 0.25) {
+                    finalPrediction = "Gas Giant / Sub-Neptune";
                 }
 
                 // safe score extraction 
@@ -1747,7 +1751,7 @@
                 const gravScore = data.scores?.gravity ?? Math.round(computedGravScore);
 
                 // camera pull-back
-                animateCameraToOverview(data.prediction);
+                animateCameraToOverview(finalPrediction);
 
                 // updating status badge if it was offline
                 if (statusBadge) {
@@ -1765,18 +1769,21 @@
                     summaryClass.innerText = `Class: ${data.prediction}`;
                 }
 
-                if (data.prediction === "Habitable Candidate") {
+                if (finalPrediction === "Habitable Candidate") {
                     playUISound('success');
                     resultDiv.style.background = "#047857";
                     resultDiv.style.borderColor = "#10b981";
-                } else if (data.prediction === "Gas Giant") {
+                    resultDiv.innerHTML = `CLASSIFICATION: HABITABLE CANDIDATE`;
+                } else if (finalPrediction.includes("Gas Giant")) {
                     playUISound('analyzing');
                     resultDiv.style.background = "#b45309";
                     resultDiv.style.borderColor = "#f59e0b";
+                    resultDiv.innerHTML = `CLASSIFICATION: ${finalPrediction.toUpperCase()}`;
                 } else {
                     playUISound('analyzing');
                     resultDiv.style.background = "#1d4ed8";
                     resultDiv.style.borderColor = "#3b82f6";
+                    resultDiv.innerHTML = `CLASSIFICATION: ${finalPrediction.toUpperCase()}`;
                 }
 
                 // call the update for habitability bars
