@@ -1208,20 +1208,29 @@
         function updateHabitabilityUI(tempScore, gravityScore) {
             const totalScore = Math.round((tempScore + gravityScore) / 2);
 
-            //update labels
-            document.getElementById('temp-score-val').textContent = `${tempScore}%`;
-            document.getElementById('gravity-score-val').textContent = `${gravityScore}%`;
-            document.getElementById('habitability-total-score').textContent = `${totalScore}%`;
+            // safely update labels
+            const tempValEl = document.getElementById('temp-score-val');
+            const gravValEl = document.getElementById('gravity-score-val');
+            const totalValEl = document.getElementById('habitability-total-score');
 
-            //update progress bars
-            document.getElementById('temp-bar').style.width = `${tempScore}%`;
-            document.getElementById('gravity-bar').style.width = `${gravityScore}%`;
+            if (tempValEl) tempValEl.textContent = `${tempScore}%`;
+            if (gravValEl) gravValEl.textContent = `${gravityScore}%`;
+            if (totalValEl) totalValEl.textContent = `${totalScore}%`;
 
-            //color base based on result
+            //safely update bars
+            const tempBarEl = document.getElementById('temp-bar');
+            const gravBarEl = document.getElementById('gravity-bar');
+
             const getColor = (score) => score > 70 ? '#00ff88' : score > 40 ? '#ffaa00' : '#ff4444';
-            document.getElementById('temp-bar').style.backgroundColor = getColor(tempScore);
-            document.getElementById('gravity-bar').style.backgroundColor = getColor(gravityScore);
 
+            if (tempBarEl) {
+                tempBarEl.style.width = `${tempScore}%`;
+                tempBarEl.style.backgroundColor = getColor(tempScore);
+            }
+            if (gravBarEl) {
+                gravBarEl.style.width = `${gravityScore}%`;
+                gravBarEl.style.backgroundColor = getColor(gravityScore);
+            }
         }
 
         function init3D() {
@@ -1676,11 +1685,16 @@
             const hudOverlay = document.getElementById('hud-overlay');
             const summaryClass = document.getElementById('summary-class');
 
+            const mass = parseFloat(document.getElementById('mass').value);
+            const radius = parseFloat(document.getElementById('radius').value);
+            const period = parseFloat(document.getElementById('period').value);
+            const stellarTemp = parseFloat(document.getElementById('star-temp').value);
+
             const payload = {
-                pl_bmasse: parseFloat(document.getElementById('mass').value),
-                pl_rade: parseFloat(document.getElementById('radius').value),
-                pl_orbper: parseFloat(document.getElementById('period').value),
-                st_teff: parseFloat(document.getElementById('star-temp').value)
+                pl_bmasse: mass,
+                pl_rade: radius,
+                pl_orbper: period,
+                st_teff: stellarTemp
             };
 
             const apiUrl = "https://rikimii-exoplanet-api.hf.space/predict";
@@ -1716,9 +1730,21 @@
 
                 const data = await response.json();
 
-                // extract sub-scores by backapi
-                const tempScore = data.scores.temperature;
-                const gravityScore = data.scores.gravity
+                // safely override
+                let finalPrediction = data.prediction;
+                if(stellarTemp > 7500) {
+                    finalPrediction = "Non-Habitable (Too Hot)";
+                } else if (stellarTemp < 2000) {
+                    finalPrediction = "Non-Habitable (Tidal Lock)";
+                }
+
+                // safe score extraction 
+                const computedTempScore = Math.max(0, Math.min(100, 100 - Math.abs(stellarTemp - 5800) / 40));
+                const computedGravScore = Math.max(0, Math.min(100, 100 - Math.abs((mass / (radius * radius)) - 1.0) * 30));
+
+                // use backend api values if possible
+                const tempScore = data.scores?.temperature ?? Math.round(computedTempScore);
+                const gravScore = data.scores?.gravity ?? Math.round(computedGravScore);
 
                 // camera pull-back
                 animateCameraToOverview(data.prediction);
@@ -1753,8 +1779,11 @@
                     resultDiv.style.borderColor = "#3b82f6";
                 }
 
-                // call the update
-                updateHabitabilityUI(tempScore, gravityScore);
+                // call the update for habitability bars
+                if (typeof updateHabitabilityUI === 'function') {
+                    updateHabitabilityUI(tempScore, gravScore);
+                }
+                
 
             } catch (error) {
                 console.error("API Error:", error);
