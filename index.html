@@ -995,13 +995,29 @@
                 description: "Located within the circumstellar habitable zone. Planetary temperature and mass favor stable liquid surface water and a balanced atmosphere capable of sustaining organic processes",
                 soundtype: "success"
             },
-            "Gas Giant": {
+            "Gas Giant / Sub-Neptune": {
                 badgeColor: "#b45309",
                 borderColor: "#f59e0b",
                 atmo: "Dense Hydrogen & Helium Cloud Layers",
                 surface: "No solid Surface (Metallic Core)",
                 description: "Massive gas envelope with imense atmospheric pressure. Highly turbulent cloud bands and violent storms dominate and upper planetary weather systems.",
                 soundtype: "analyzing"
+            },
+            "Non-Habitable (Too Hot)": {
+                borderColor: "#991b1b",
+                borderColor: "ef4444",
+                atmo: "Superheated Vapor / Dissociated Ion Shell",
+                surface: "Molten Lava Lakes / Scorched Crust",
+                description: "Subjected to extreme stellar flux from a high-temperature star. Atmospheric escape is severe and surface thermal equilibrium renders liquid water impossible.",
+                soundtype: "analyzing"
+            },
+            "Non-Habitable (Tidal Lock)": {
+                badgeColor: "1e3a8a",
+                borderColor: "#3b82f6",
+                atmo: "Asymmetric / Collapsed Ice Atmosphere",
+                surface: "Permanent Day-Night Thermal Gradient",
+                description: "In extreme proximity to a low-mass star, causing synchronous rotataion. Extreme temperature differences betweeen hemisphere halves inhibit stable surface environments.",
+                soundtype: "analyzing",
             },
             "Terrestrial / Rocky": {
                 badgeColor: "#1d4ed8",
@@ -1013,7 +1029,7 @@
             },
             "Neptunian / Ice Giant": {
                 badgeColor: "#6d28d9",
-                borderColor: "8b5cf6",
+                borderColor:"#8b5cf6",
                 atmo: "Methane, Ammonia, and Hydrogen Mantle",
                 surface: "Supercritical Fluid / Ice Ocean",
                 description: "Intermediate mass planet wrapped in thick icy volatiles. Strong atmosphereic methane leads to distinct coloration and deep fluidic mantle layers.",
@@ -1037,6 +1053,24 @@
             },
         };
 
+        function getProfileForClass(className) {
+            if (!className) return PLANET_PROFILES["Unknown / Outlier"];
+
+            // direct match check first
+            if (PLANET_PROFILES[className]) return PLANET_PROFILES[className];
+
+            // fallback search matching
+            const lower = className.toLowerCase();
+            if(lower.includes("too hot")) return PLANET_PROFILES["Non-Habitable (Too Hot)"];
+            if(lower.includes("tidal lock")) return PLANET_PROFILES["Non-Habitable (Tidal Lock)"];
+            if(lower.includes("sub-neptune") || lower.includes("gas giant")) return PLANET_PROFILES["Gas Giant / Sub-Neptune"];
+            if(lower.includes("habitable candidate")) return PLANET_PROFILES["Habitable Candidate"];
+            if(lower.includes("rocky") || lower.includes("terrestrial")) return PLANET_PROFILES["Terrestrial / Rocky"];
+            if(lower.includes("super earth")) return PLANET_PROFILES["Super Earth"];
+
+            return PLANET_PROFILES["Unknown / Outlier"];
+        }
+
         function applySummaryProfile(className) {
             const summaryClass = document.getElementById('summary-class');
             const summaryAtmo = document.getElementById('summary-atmo');
@@ -1044,8 +1078,8 @@
             const summaryDesc = document.getElementById('summary-description');
             const resultDiv = document.getElementById('result');
 
-            //fallback to unknown profile if key is not found
-            const profile = PLANET_PROFILES[className] || PLANET_PROFILES["Unknown / Outlier"];
+            //get summaries here
+            const profile = getProfileForClass(className);
 
             if (summaryClass) summaryClass.innerText = `Class: ${className}`;
             if (summaryAtmo) summaryAtmo.innerText = profile.atmo;
