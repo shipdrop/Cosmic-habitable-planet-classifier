@@ -568,38 +568,48 @@
         .info-container {
             position: relative;
             max-width: 1200px;
-            margin: 2rem auto;
-            padding: 2rem 1.5rem;
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid rgba(0, 240, 255, 0.2);
+            margin: 3rem auto 1.5rem auto;
+            padding: 3rem 2rem 2rem 2rem;
+            background: rgba(10, 15, 29, 0.75);
+            border: 1px solid rgba(0, 240, 255, 0.25);
             border-radius: 16px;
             color: #e2ebf0;
-            font-family: 'Inter', system-ui, sans-serif;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.08), inset 0 0 15px rgba(0, 240, 255, 0.03);
             z-index: 10;
         }
 
-        .info-hanger {
+        .info-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
 
         .badge {
             display: inline-block;
             padding: 0.35rem 0.85rem;
-            background: rgba(0, 255, 136, 0.15);
+            background: rgba(0, 255, 136, 0.12);
             color: #0f8;
-            border: 1px solid rgba(0, 255, 136, 0.3);
+            border: 1px solid rgba(0, 255, 136, 0.35);
             border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
         }
 
         .info-header h1 {
-            font-size: 2.25rem;
-            margin: 0.25rem 0;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0 0 0.75rem 0;
             color: #ffffff;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
         }
 
         .tagline {
@@ -607,82 +617,106 @@
             font-size: 1.05rem;
             max-width: 650px;
             margin: 0 auto;
+            display: block;
         }
 
         .info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
+            margin: 2rem;
         }
 
         .info-card {
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 1.5rem;
-            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255 0.08);
+            padding: 1.75rem;
+            border-radius: 12px;
+            transition: all 0.3 ease;
+        }
+        
+        .info-card:hover {
+            border-color: rgba(0, 240, 255, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0 240, 255, 0.1);
         }
 
         .card-icon {
-            font-size: 1.75rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            margin-bottom: 0.75rem;
         }
 
         .info-card h2 {
             font-size: 1.25rem;
-            color: #38bdf8;
-            margin-top: 0;
-            margin-bottom: 0.75rem;
+            color: #00f0ff;
+            margin: 0 0 1rem 0;
+            font-weight: 700;
+            letter-spacing: -0.2px;
         }
 
-        .info-card p {
+        .info-card p, .usage-steps, .audience-list {
             color: #cbd5e1;
             line-height: 1.6;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
         }
 
         .usage-steps, .audience-list {
             padding-left: 1.2rem;
             margin: 0;
-            color: #cbd5e1;
-            font-size: 0.9rem;
-            line-height: 1.6;
         }
 
-        .audience-list li {
-            margin-bottom: 0.5rem;
+        .usage-steps li, .audience-list li {
+            margin-bottom: 0.6rem;
         }
 
-        .usage-steps li {
-            margin-bottom: 0.75rem;
-            line-height: 1.5;
-            font-size: 0.95rem;
-        }
-
-        .usage-steps li strong {
+        .usage-steps li strong, .audience-list li strong {
             color: #ffffff;
         }
 
         .scroll-prompt {
             text-align: center;
-            margin-top: 2rem;
+            margin-top: 1rem;
             color: #00f0ff;
-            font-weight: 500;
-            font-size: 0.9rem;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 1.5px;
         }
         
         .scroll-arrow {
-            font-size: 1.5rem;
-            animation: bounce 1.5s infinite;
-            margin-top: 0.25rem;
+            font-size: 1.2rem;
+            animation: bounce 1.6s infinite ease-in-out;
+            margin-top: 0.3rem;
         }
 
         @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(6px); }
+            0%, 100% { transform: translateY(0); opacity: 0.6; }
+            50% { transform: translateY(6px); opacity: 1; }
         }
 
+        /* glowing divider line  */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 2rem auto;
+            gap: 1rem;
+            padding: 0 1rem;
+        }
 
-    
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.6), transparent);
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+        }
+
+        .divider-node {
+            color: #00f0ff;
+            font-size: 0.75rem;
+            text-shadow: 0 0 10px #00f0ff;
+        }
+
 
 
     </style>
@@ -693,7 +727,7 @@
         <section id="project-info-section" class="info-container">
             <header class="info-header">
                 <span class="badge">V2.0 Science & Simulation Suite</span>
-                <h1>Cosmic Exoplanet Analyzer</h1>
+                <h1>Cosmic Exoplanet Classifier</h1>
                 <p class="tagline">Exoplore Hypothetical and real exoplanets through real-time 3D Physics and machine learning</p>
             </header>
 
@@ -731,6 +765,13 @@
                 <div class="scroll-arrow">↓</div>
             </div>
         </section>
+
+        <!--line separating the info section and simulation-->
+        <div class="section-divider">
+            <div class="divider-line"></div>
+            <div class="divider-node"></div>
+            <div class="divider-line"></div>
+        </div>
     
     <div class="hero-viewport">
 
