@@ -718,6 +718,23 @@
             text-shadow: 0 0 10px #00f0ff;
         }
 
+        .bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #00ff88;
+            border-radius: 3px;
+            transition: width 0.5s ease-out, background-color 0.5s ease-out;
+        }
+
 
 
     </style>
@@ -856,7 +873,7 @@
         <div class="summary-box">
             <div>
                 <h3>Your Planet Summary</h3>
-                <div id="summary-class" class="summary-class">Class: Class: Pending Analysis</div>
+                <div id="summary-class" class="summary-class">Class: Pending Analysis</div>
                 <p id="summary-description" class="summary-description">
                     Adjust the parameters above and execute the ML analysis to generate a planetary profile summary.
                 </p>
@@ -866,6 +883,36 @@
             <div class="summary-details" style="display: flex; flex-direction: column; gap: 6px; margin: 12px 0; font-size: 0.85rem;">
                 <div><strong>Atmospheric Type:</strong> <span id="summary-atmo">--</span></div>
                 <div><strong>Surface Potential:</strong> <span id="summary-surface">--</span></div>
+            </div>
+
+            <!-- habitability breakdown index-->
+            <div class="habitability-breakdown" style="margin: 16px 0; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255 0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4 style="margin: 0; color: #00f0ff; font-size: 0.95rem;">Habitability Index</h4>
+                    <span id="habitability-total-score" style="font-size: 0.85rem; font-weight: bold; color: #00ff88;">0%</span>
+                </div>
+
+
+                <!--temperature stability metric-->
+                <div class="metric-bar-group" style="margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #cbd5e1;">
+                        <span>Temperature Stability</span>
+                        <span id="temp-score-val">--%</span>
+                    </div>
+                    <div class="bar-bg">
+                        <div id="temp-bar" class="bar-fill"></div>
+                    </div>
+                </div>
+
+                <!--Gravity and atmosphere retention Metric-->
+                <div class="metric-bar-group">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #cbd5e1;">
+                        <span>Gravity & Atmosphere</span>
+                    </div>
+                    <div class="bar-bg">
+                        <div id="gravity-bar" class="bar-fill"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- Primary Metrics Grid-->
@@ -1108,6 +1155,73 @@
             if (!chartInstance) return;
             chartInstance.data.datasets[1].data = [{ x: period, y: mass }];
             chartInstance.update('none') // update without flickering
+        }
+
+        // calculate inner and outer habitable zone boundaries in AU
+        function getHabitableZoneAU(stellarTemp) {
+            const relativeLuminos = Math.pow(stellarTemp / 5778, 4);
+            const innerAU = 0.95 * Math.sqrt(relativeLuminos);
+            const outerAU = 1.37 * Math.sqrt(relativeLuminos);
+            return { innerAU, outerAU };
+        }
+
+        // renders and updates goldilocks zone ring
+        function updateHabitableZoneOV(scene, stellarTemp, scaleFactor = 10) {
+            const { innerAU, outerAU } = getHabitableZoneAU(stellarTemp);
+
+            // dispose prev mesh
+            if (window.HabitableZoneMesh) {
+                scene.remove(window.HabitableZoneMesh);
+                window.HabitableZoneMesh.geometry.dispose();
+                window.HabitableZoneMesh.material.dispose();
+            }
+
+            const geometry = new THREE.RingGeometry(innerAU * scaleFactor, outerAU * scaleFactor, 64);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0x00ff88,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.25,
+                depthWrite: false
+            });
+
+            window.HabitableZoneMesh = new THREE.Mesh(geometry, material);
+            window.HabitableZoneMesh.rotation.x = Math.PI / 2;
+            scene.add(window.HabitableZoneMesh);
+        }
+
+        function calculateDerivedPhysics(massEarths, radiusEarths, periodDays, stellarTemp) {
+            // surface gravity relative to earth
+            const gravity = massEarths / Math.pow(radiusEarths, 2);
+
+            //orbital distance in AU via kepler's 3rd law
+            const periodYears = periodDays / 365.25;
+            const distanceAU = Math.cbrt(Math.pow(periodYears / 2));
+
+            // equilibrium temperature in Celsius (assuming 0.3 albebo)
+            const tempKelvin = stellarTemp * Math.sqrt(0.00465 / (2 * distanceAU)) * Math.pow(1 - 0.3, 0.25);
+            const tempCelsius = Math.round(tempKelvin - 273.15);
+
+            return { gravity: gravity.toFixed(2), distanceAU: distanceAU.toFixed(2), tempCelsius };
+        }
+
+        function updateHabitabilityUI(tempScore, gravityScore) {
+            const totalScore = Math.round((tempScore + gravityScore) / 2);
+
+            //update labels
+            document.getElementById('temp-score-val').textContent = `${tempScore}%`;
+            document.getElementById('gravity-score-val').textContent = `${gravityScore}%`;
+            document.getElementById('habitability-total-score').textContent = `${totalScore}%`;
+
+            //update progress bars
+            document.getElementById('temp-bar').style.width = `${tempScore}%`;
+            document.getElementById('gravity-bar').style.width = `${gravityScore}%`;
+
+            //color base based on result
+            const getColor = (score) => score > 70 ? '#00ff88' : score > 40 ? '#ffaa00' : '#ff4444';
+            document.getElementById('temp-bar').style.backgroundColor = getColor(tempScore);
+            document.getElementById('gravity-bar').style.backgroundColor = getColor(gravityScore);
+
         }
 
         function init3D() {
@@ -1457,6 +1571,20 @@
                 planetMesh.material.color.lerp(targetPlanetColor, 0.2);
             }
 
+            // update the goldilocks zone
+            if (typeof updateHabitableZoneOV === 'function' && typeof scene !== 'undefined') {
+                updateHabitableZoneOV(scene, temp);
+            }
+
+            const tempScore = Math.max(0, Math.min(100, 100 - Math.abs(temp - 5800) / 40));
+            //gravity score
+            const gravity = mass / (radius * radius);
+            const gravityScore = Math.max(0, Math.min(100, 100 - Math.abs(gravity - 1.0) * 30));
+            //update the index breakdown
+            if (typeof updateHabitabilityUI === 'function') {
+                updateHabitabilityUI(Math.round(tempScore), Math.round(gravityScore));
+            }
+
         }
 
         function animate() {
@@ -1588,6 +1716,10 @@
 
                 const data = await response.json();
 
+                // extract sub-scores by backapi
+                const tempScore = data.scores.temperature;
+                const gravityScore = data.scores.gravity
+
                 // camera pull-back
                 animateCameraToOverview(data.prediction);
 
@@ -1620,6 +1752,9 @@
                     resultDiv.style.background = "#1d4ed8";
                     resultDiv.style.borderColor = "#3b82f6";
                 }
+
+                // call the update
+                updateHabitabilityUI(tempScore, gravityScore);
 
             } catch (error) {
                 console.error("API Error:", error);
