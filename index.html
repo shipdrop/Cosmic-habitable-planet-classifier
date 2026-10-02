@@ -565,159 +565,134 @@
             }
         }
 
-        .info-container {
+        /* intro section ASCII art */
+        .info-section-container {
             position: relative;
-            max-width: 1200px;
-            margin: 3rem auto 1.5rem auto;
-            padding: 3rem 2rem 2rem 2rem;
-            background: rgba(10, 15, 29, 0.75);
-            border: 1px solid rgba(0, 240, 255, 0.25);
-            border-radius: 16px;
-            color: #e2ebf0;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.08), inset 0 0 15px rgba(0, 240, 255, 0.03);
-            z-index: 10;
+            background: #060911;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 6px;
+            padding: 20px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            color: #00f0ff;
+            box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.05), 0 0 25px rgba(0, 240, 255, 0.9);
+            margin-bottom: 24px;
+            overflow: hidden;
         }
 
-        .info-header {
+        /* header bar */
+        .ascii-header-bar {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            text-align: center;
-            margin-bottom: 2.5rem;
+            border-bottom: 1px dashed rgba(0, 240, 255, 0.3);
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            font-size: 0.75rem;
         }
 
-        .badge {
-            display: inline-block;
-            padding: 0.35rem 0.85rem;
-            background: rgba(0, 255, 136, 0.12);
-            color: #0f8;
-            border: 1px solid rgba(0, 255, 136, 0.35);
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
+        .ascii-title {
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+        }
+
+        .ascii-status {
+            color: #00ff88;
+            font-size: 0.7rem;
             letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
         }
 
-        .info-header h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin: 0 0 0.75rem 0;
-            color: #ffffff;
-            letter-spacing: -0.5px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        /* main display box */
+        .ascii-display-layout {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-start;
         }
 
-        .tagline {
-            color: #94a3b8;
-            font-size: 1.05rem;
-            max-width: 650px;
-            margin: 0 auto;
-            display: block;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem;
-        }
-
-        .info-card {
-            background: rgba(15, 23, 42, 0.65);
-            border: 1px solid rgba(255, 255, 255 0.08);
-            padding: 1.75rem;
-            border-radius: 12px;
-            transition: all 0.3 ease;
-        }
-        
-        .info-card:hover {
-            border-color: rgba(0, 240, 255, 0.4);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0 240, 255, 0.1);
-        }
-
-        .card-icon {
-            font-size: 1.8rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .info-card h2 {
-            font-size: 1.25rem;
-            color: #00f0ff;
-            margin: 0 0 1rem 0;
-            font-weight: 700;
-            letter-spacing: -0.2px;
-        }
-
-        .info-card p, .usage-steps, .audience-list {
-            color: #cbd5e1;
-            line-height: 1.6;
-            font-size: 0.92rem;
-        }
-
-        .usage-steps, .audience-list {
-            padding-left: 1.2rem;
-            margin: 0;
-        }
-
-        .usage-steps li, .audience-list li {
-            margin-bottom: 0.6rem;
-        }
-
-        .usage-steps li strong, .audience-list li strong {
-            color: #ffffff;
-        }
-
-        .scroll-prompt {
+        /* ASCII canvas box */
+        .ascii-art-wrapper {
+            flex: 0 0 210px;
+            background: rgba(10, 10, 20, 0.75);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 4px;
+            padding: 12px;
             text-align: center;
-            margin-top: 1rem;
+        }
+
+        .ascii-art {
+            font-size: 8px;
+            line-height: 8px;
             color: #00f0ff;
-            font-weight: 700;
-            font-size: 0.8rem;
-            letter-spacing: 1.5px;
-        }
-        
-        .scroll-arrow {
-            font-size: 1.2rem;
-            animation: bounce 1.6s infinite ease-in-out;
-            margin-top: 0.3rem;
+            white-space: pre;
+            display: inline-block;
+            text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+            user-select: none;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); opacity: 0.6; }
-            50% { transform: translateY(6px); opacity: 1; }
+        /* main content grid */
+        .info-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
         }
 
-        /* glowing divider line  */
-        .section-divider {
+        .info-block {
+            background: rgba(0, 240, 255, 0.02);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            border-left: 3px solid #00f0ff;
+            border-radius: 0 4px 4px 0;
+            padding: 12px 14px;
+        }
+
+        .info-block-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 1200px;
-            margin: 2rem auto;
-            gap: 1rem;
-            padding: 0 1rem;
+            gap: 8px;
+            margin-bottom: 6px;
         }
 
-        .divider-line {
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.6), transparent);
-            box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+        .info-block h4 {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #ffffff;
+            letter-spacing: 1px;
         }
 
-        .divider-node {
-            color: #00f0ff;
+        .info-tag {
+            font-size: 0.65rem;
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.1);
+            padding: 1px 6px;
+            border-radius: 2px;
+        }
+
+        .info-block p, .info-block ul {
+            margin: 0;
             font-size: 0.75rem;
-            text-shadow: 0 0 10px #00f0ff;
+            color: #a5f3fc;
+            line-height: 1.45;
         }
 
+        .info-block ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-block li {
+            margin-bottom: 4px;
+        }
+
+        .info-block li::before {
+            content: "> ";
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+     
+        /* habitability breakdown index bars */
         .bar-bg {
             width: 100%;
             height: 6px;
@@ -742,59 +717,73 @@
 <body>
 
     <!-- Info Section-->
-        <section id="project-info-section" class="info-container">
-            <header class="info-header">
-                <span class="badge">V1.1 Science & Simulation Suite</span>
-                <h1>Cosmic Exoplanet Classifier</h1>
-                <p class="tagline">Exoplore Hypothetical and real exoplanets through real-time 3D Physics and machine learning</p>
-            </header>
+    <div class="info-section-container">
+        <!-- header bar-->
+        <div class="ascii-header-bar">
+            <span class="ascii-title">[SYS_INIT // EXOPLANET_ENGINE_V1.1]</span>
+            <span class="ascii-status">● SYSTEM_ONLINE</span>
+        </div>
 
+        <div class="ascii-display-layout">
+            <!-- ASCII animation loader-->
+            <div class="ascii-art-wrapper">
+                <div class="ascii-art" id="info-ascii-canvas"></div>
+            </div>
+
+            <!-- System Info and Summary-->
             <div class="info-grid">
-                <div class="info-card">
-                    <h2>What is the Purpose?</h2>
+                <!-- Project Objective-->
+                <div class="info-block">
+                    <div class="info-block">
+                        <h4>// PROJECT_OBJECTIVE</h4>
+                    </div>
                     <p>
-                      Raw astronomical datasets are often hard to visualize. This engines combines
-                      <strong>astrophysical calculations</strong> and <strong>machine learning predictions</strong>
-                      to translate parameters into visual 3D worlds.
+                        Analyze exoplanetary parameters using astrophysical guardrails and trained machine learning models to detect potentially habitable candidates.
                     </p>
                 </div>
 
-                <div class="info-card">
-                    <h2>How Do You Use It?</h2>
-                    <ol class="usage-steps">
-                      <li><strong>Adjust Parameters:</strong> Use sliders to change mass, radius, distance, and temperature.</li>
-                      <li><strong>Observe the Goldilocks Zone:</strong> Watch the green orbital ring shift dynamically.</li>
-                      <li><strong>Analyze Habitability:</strong> Check the breakdown index and environmental logs.</li>
-                    </ol>
+                <!-- System Constrols -->
+                <div class="info-block">
+                    <div class="info-block-header">
+                        <h4>// SYSTEM_CONTROLS</h4>
+                    </div>
+                    <ul>
+                        <li>Adjust Mass, Radius, and Stellar Temp</li>
+                        <li>Observe dynamic Goldilocks Zone</li>
+                        <li>Execute ML Analysis to compute metrics</li>
+                    </ul>
                 </div>
 
-                <div class="info-card">
-                    <h2>Who Can Use It & For What?</h2>
-                    <ul class="audience-list">
-                        <li><strong>Students & Educators:</strong> Interactive physics demonstration of Kepler's laws, stellar radiation, and habitability zones.</li>
-                        <li><strong>Space Enthusiasts:</strong> Test "what-if" planetary scenarios and discover real NASA exoplanet datasets.</li>
-                        <li><strong>Developers:</strong> Explore open-source WebGL (Three.js) rendering and FastAPI ML integration.</li>
+                <!-- Who can use this and for what? -->
+                <div class="info-block">
+                    <div class="info-block-header">
+                        <span class="info-tag">WHO CAN USE THIS?</span>
+                        <h4>OPERATOR PROFILES</h4>
+                    </div>
+                    <ul>
+                        <li><strong>Students & Educators:</strong> Use for learning exoplanet physics, Kepler's laws, habitability Zones, and testing hypotheses interactively.</li>
+                        <li><strong>Space Enthusiasts:</strong> Test "what-if" planetary situations and discover real NASA exoplanet archive datasets.</li>
+                        <li><strong>Developers:</strong> Explore open-source WebGL (Three.js) rendering and test real-time ML inference integration.</li>
+                    </ul>
+                </div>
+
+                <!-- Primary Use Cases -->
+                <div class="info-block">
+                    <div class="info-block-header">
+                        <span class="info-tag">WHAT IT'S FOR</span>
+                        <h4> PRIMARY APPLICATIONS</h4>
+                    </div>
+                    <ul>
+                        <li><strong>Habitability Screening:</strong> Evaluate planetary bulk density and host stellar flux to screen candidate planets against habitability criteria.</li>
+                        <li><strong>Goldilocks Prototype:</strong> Models dynamic circumstellar habitable zone boundaries in real-time as stellar effective temperature and luminosity values shift.</li>
+                        <li><strong>Interactive Visualization:</strong> Translates complex astronomical survey parameters into high-resolution 3D visual models for intuitive dataset exploration.</li>
                     </ul>
                 </div>
             </div>
-
-            <div class="scroll-prompt">
-                <span>Scroll Down To Explore Simulation</span>
-                <div class="scroll-arrow">↓</div>
-            </div>
-        </section>
-
-        <section>
-            <!--line separating the info section and simulation-->
-            <div class="section-divider">
-              <div class="divider-line"></div>
-              <div class="divider-node">◆</div>
-              <div class="divider-line"></div>
-            </div>
-        </section>
+        </div>
+    </div>
 
 
-    
     <div class="hero-viewport">
 
         <!-- 3D engine container -->
@@ -985,6 +974,44 @@
             isAnalyzing = false;
 
         }
+
+        // ASCII loader func
+        (function initAsciiInfoLoader() {
+            const asciiChars = [" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"];
+            const asciiCanvas = document.getElementById('info-ascii-canvas');
+
+            function generateAsciiArt(frame) {
+                let art = "";
+                const rows = 9;
+                const cols = 25;
+
+                for (let i = 0; i < rows; i++) {
+                    let line = "";
+                    for (let j = 0; j < cols; j++) {
+                        const dx = (j - cols / 2) / 1.35;
+                        const dy = i - rows / 2;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < 4.0) {
+                            const CharIdx = Math.floor((dist / 4.0) * asciiChars.length + (frame * 0.2)) % asciiChars.length;
+                            line += asciiChars[CharIdx];
+                        } else {
+                            line += " ";
+                        }
+                    }
+                    art += line + "\n";
+                }
+                return art;
+            }
+
+            let frame = 0;
+            setInterval(() => {
+                if (asciiCanvas) {
+                    asciiCanvas.textContent = generateAsciiArt(frame);
+                    frame++;
+                }
+            }, 120);
+        })();
 
         const PLANET_PROFILES = {
             "Habitable Candidate": {
