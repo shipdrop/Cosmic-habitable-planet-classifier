@@ -716,55 +716,54 @@
 </head>
 <body>
 
-    <!-- Info Section-->
+    <!--Info Section-->
     <div class="info-section-container">
 
-        <!-- header bar-->
+        <!-- header bar -->
         <div class="ascii-header-bar">
-            <span class="ascii-title">[SYS_INIT // EXOPLANET_ENGINE_V1.1]</span>
+            <span class="ascii-title">[SYS_INIT // EXOPLANET_ENGINE_V1.2]</span>
             <span class="ascii-status">● SYSTEM_ONLINE</span>
         </div>
 
         <div class="ascii-display-layout">
-            <!-- ASCII animation loader-->
+            <!-- ASCII animation loader -->
             <div class="ascii-art-wrapper">
                 <div class="ascii-art" id="info-ascii-canvas"></div>
             </div>
 
-            <!-- System Info and Summary-->
+            <!-- system info and summary -->
             <div class="info-grid">
-                <!-- Project Objective-->
+                <!-- Project objective -->
                 <div class="info-block">
-                    <div class="info-block">
-                        <h4>// PROJECT_OBJECTIVE</h4>
+                    <div class="info-block-header">
+                        <h4>// PROJECT OBJECTIVE</h4>
                     </div>
                     <p>
-                        Analyze exoplanetary parameters using astrophysical guardrails and trained machine learning models to detect potentially habitable candidates.
+                        Analyze exoplanetary parameters and using astrophysical guardrails and trained machine learning models to detect potentially habitable candidates.
                     </p>
                 </div>
 
-                <!-- System Constrols -->
                 <div class="info-block">
                     <div class="info-block-header">
                         <h4>// SYSTEM_CONTROLS</h4>
                     </div>
                     <ul>
-                        <li>Adjust Mass, Radius, and Stellar Temp</li>
+                        <li>Adjust Mass, Radius, Orbital Period and Stellar Temp</li>
                         <li>Observe dynamic Goldilocks Zone</li>
                         <li>Execute ML Analysis to compute metrics</li>
                     </ul>
                 </div>
 
-                <!-- Who can use this and for what? -->
+                <!-- who can use this and for what? -->
                 <div class="info-block">
                     <div class="info-block-header">
-                        <span class="info-tag">WHO CAN USE THIS?</span>
+                        <span class="info-tag">WHO CAN USE THIS? </span>
                         <h4>OPERATOR PROFILES</h4>
                     </div>
                     <ul>
-                        <li><strong>Students & Educators:</strong> Use for learning exoplanet physics, Kepler's laws, habitability Zones, and testing hypotheses interactively.</li>
-                        <li><strong>Space Enthusiasts:</strong> Test "what-if" planetary situations and discover real NASA exoplanet archive datasets.</li>
-                        <li><strong>Developers:</strong> Explore open-source WebGL (Three.js) rendering and test real-time ML inference integration.</li>
+                        <li><strong>Students & Educators:</strong> Use for learning exoplanetary physics, Kepler's Laws, habitability zones and testing hypotheses interactively. </li>
+                        <li><strong>Space Enthusiasts:</strong> Test "what-if" planetary situations and discover real NASA exoplanet archive dataset. </li>
+                        <li><strong>Developers:</strong> Explore open-source WebGL (Three.js) rendering and test real-time ML inference integration. </li>
                     </ul>
                 </div>
 
@@ -772,18 +771,17 @@
                 <div class="info-block">
                     <div class="info-block-header">
                         <span class="info-tag">WHAT IT'S FOR</span>
-                        <h4> PRIMARY APPLICATIONS</h4>
+                        <h4>PRIMARY APPLICATIONS</h4>
                     </div>
                     <ul>
-                        <li><strong>Habitability Screening:</strong> Evaluate planetary bulk density and host stellar flux to screen candidate planets against habitability criteria.</li>
-                        <li><strong>Goldilocks Prototype:</strong> Models dynamic circumstellar habitable zone boundaries in real-time as stellar effective temperature and luminosity values shift.</li>
-                        <li><strong>Interactive Visualization:</strong> Translates complex astronomical survey parameters into high-resolution 3D visual models for intuitive dataset exploration.</li>
+                        <li><strong>Habitability Screening:</strong> Evaluate planetary bulk density and host stellar flux to screen candidate planets against the habitability criteria. </li>
+                        <li><strong>GoldiLocks Prototype:</strong> Models dynamic circumstellar habitable zone boundaries in real-time as stellar effective temperature and luminosity values change. </li>
+                        <li><strong>Interactive Visualization:</strong> Translates complex astronomical survey parameters into high-resolution 3D visual models for intuitive dataset exploration. </li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-
 
     <div class="hero-viewport">
 
@@ -977,51 +975,6 @@
         }
     
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // ASCII loader func
-        (function initAsciiInfoLoader() {
-            const asciiChars = [" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"];
-            const asciiCanvas = document.getElementById('info-ascii-canvas');
-
-            // check for canvas
-            if (!asciiCanvas) {
-                console.warn("ASCII canvas element not found.");
-                return;
-            }
-
-            function generateAsciiArt(frame) {
-                let art = "";
-                const rows = 9;
-                const cols = 25;
-
-                for (let i = 0; i < rows; i++) {
-                    let line = "";
-                    for (let j = 0; j < cols; j++) {
-                        const dx = (j - cols / 2) / 1.35;
-                        const dy = i - rows / 2;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-
-                        if (dist < 4.0) {
-                            const CharIdx = Math.floor((dist / 4.0) * asciiChars.length + (frame * 0.2)) % asciiChars.length;
-                            line += asciiChars[CharIdx];
-                        } else {
-                            line += " ";
-                        }
-                    }
-                    art += line + "\n";
-                }
-                return art;
-            }
-
-            let frame = 0;
-            setInterval(() => {
-                if (asciiCanvas) {
-                    asciiCanvas.textContent = generateAsciiArt(frame);
-                    frame++;
-                }
-            }, 120);
-        })();
-    });
 
 
         const PLANET_PROFILES = {
@@ -1042,15 +995,15 @@
                 soundtype: "analyzing"
             },
             "Non-Habitable (Too Hot)": {
-                borderColor: "#991b1b",
-                borderColor: "ef4444",
+                badgeColor: "#991b1b",
+                borderColor: "#ef4444",
                 atmo: "Superheated Vapor / Dissociated Ion Shell",
                 surface: "Molten Lava Lakes / Scorched Crust",
                 description: "Subjected to extreme stellar flux from a high-temperature star. Atmospheric escape is severe and surface thermal equilibrium renders liquid water impossible.",
                 soundtype: "analyzing"
             },
             "Non-Habitable (Tidal Lock)": {
-                badgeColor: "1e3a8a",
+                badgeColor: "#1e3a8a",
                 borderColor: "#3b82f6",
                 atmo: "Asymmetric / Collapsed Ice Atmosphere",
                 surface: "Permanent Day-Night Thermal Gradient",
