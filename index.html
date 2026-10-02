@@ -977,8 +977,52 @@
             isAnalyzing = false;
 
         }
-    
 
+        document.getElementById('DOMCONTENTLoaded', () => {
+            // ASCII LOADER FUNC
+            (function initAsciiInfoLoader() {
+                const asciiChars = [" ", ".", ":", "-", "=", "+", "#", "*", "%", "@"];
+                const asciiCanvas = document.getElementById('info-ascii-canvas');
+
+                // check for canvas
+                if (!asciiCanvas) {
+                    console.warn("ASCII canvas element not found.");
+                    return;
+                }
+
+                function generateAsciiArt(frame) {
+                    let art = "";
+                    const rows = 9;
+                    const cols = 25;
+
+                    for (let i = 0; i < rows; i++) {
+                        let line = "";
+                        for (let j = 0; j < cols; j++) {
+                            const dx = (j - cols / 2) / 1.35;
+                            const dy = i - rows / 2;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+
+                            if (dist < 4.0) {
+                                const charIdx = Math.floor((dist / 4.0) * asciiChars.length + (frame * 0.2)) % asciiChars.length;
+                                line += asciiChars[charIdx];
+                            } else {
+                                line += " ";
+                            }
+                        }
+                        art += line + "\n";
+                    }
+                    return art;
+                }
+
+                let frame = 0;
+                setInterval(() => {
+                    if (asciiCanvas) {
+                        asciiCanvas.textContent = generateAsciiArt(frame);
+                        frame++;
+                    }
+                }, 120);
+            })();
+        });
 
 
         const PLANET_PROFILES = {
