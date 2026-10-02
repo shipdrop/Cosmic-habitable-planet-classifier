@@ -995,6 +995,9 @@
                     const rows = 9;
                     const cols = 25;
 
+                    const maxFrames = 30;
+                    const progress = Math.min(frame / maxFrames, 1);
+
                     for (let i = 0; i < rows; i++) {
                         let line = "";
                         for (let j = 0; j < cols; j++) {
@@ -1002,9 +1005,15 @@
                             const dy = i - rows / 2;
                             const dist = Math.sqrt(dx * dx + dy * dy);
 
-                            if (dist < 4.0) {
-                                const charIdx = Math.floor((dist / 4.0) * asciiChars.length + (frame * 0.2)) % asciiChars.length;
-                                line += asciiChars[charIdx];
+                            if (dist < 4.0 ) {
+                                const targetIdx = Math.floor((dist / 4.0) * (asciiChars.length - 1));
+
+                                if (progress < 1 && Math.random() > progress) {
+                                    const randomIdx = Math.floor(Math.random() * asciiChars.length);
+                                    line += asciiChars[randomIdx];
+                                } else {
+                                    line += asciiChars[targetIdx];
+                                }
                             } else {
                                 line += " ";
                             }
@@ -1015,11 +1024,14 @@
                 }
 
                 let frame = 0;
-                setInterval(() => {
-                    if (asciiCanvas) {
-                        asciiCanvas.textContent = generateAsciiArt(frame);
-                        frame++;
-                    }
+                const asciiInterval = setInterval(() => {
+                    asciiCanvas.textContent = generateAsciiArt(frame);
+                    frame++;
+
+                   if (frame > maxFrames) {
+                    clearInterval(asciiInterval);
+                    
+                   } 
                 }, 120);
             })();
         });
