@@ -983,6 +983,12 @@
             const asciiChars = [" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"];
             const asciiCanvas = document.getElementById('info-ascii-canvas');
 
+            // check for canvas
+            if (!asciiCanvas) {
+                console.warn("ASCII canvas element not found.");
+                return;
+            }
+
             function generateAsciiArt(frame) {
                 let art = "";
                 const rows = 9;
@@ -1017,7 +1023,7 @@
         })();
     });
 
-    
+
         const PLANET_PROFILES = {
             "Habitable Candidate": {
                 badgeColor: "#047857",
