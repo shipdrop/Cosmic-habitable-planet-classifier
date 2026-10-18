@@ -978,24 +978,20 @@
 
         }
 
-        document.getElementById('DOMCONTENTLoaded', () => {
-            // ASCII LOADER FUNC
-            (function initAsciiInfoLoader() {
-                const asciiChars = [" ", ".", ":", "-", "=", "+", "#", "*", "%", "@"];
-                const asciiCanvas = document.getElementById('info-ascii-canvas');
+        document.addEventListener('DOMContentLoaded', () => {
 
-                // check for canvas
-                if (!asciiCanvas) {
-                    console.warn("ASCII canvas element not found.");
-                    return;
-                }
+            // ASCII loader
+            (function initAsciiInfoLoader() {
+                const asciiChars = [" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"];
+                const asciiCanvas = document.getElementById('info-ascii-canvas');
+                if (!asciiChars) return;
+
+                const maxFrames = 30;
 
                 function generateAsciiArt(frame) {
                     let art = "";
                     const rows = 9;
                     const cols = 25;
-
-                    const maxFrames = 30;
                     const progress = Math.min(frame / maxFrames, 1);
 
                     for (let i = 0; i < rows; i++) {
@@ -1005,9 +1001,8 @@
                             const dy = i - rows / 2;
                             const dist = Math.sqrt(dx * dx + dy * dy);
 
-                            if (dist < 4.0 ) {
-                                const targetIdx = Math.floor((dist / 4.0) * (asciiChars.length - 1));
-
+                            if (dist < 4.0) {
+                                const targetIdx = Math.floor((dist / 4) * (asciiChars.length - 1));
                                 if (progress < 1 && Math.random() > progress) {
                                     const randomIdx = Math.floor(Math.random() * asciiChars.length);
                                     line += asciiChars[randomIdx];
@@ -1027,16 +1022,51 @@
                 const asciiInterval = setInterval(() => {
                     asciiCanvas.textContent = generateAsciiArt(frame);
                     frame++;
-
-                   if (frame > maxFrames) {
-                    clearInterval(asciiInterval);
-                    
-                   } 
+                    if (frame > maxFrames) clearInterval(asciiInterval);
                 }, 120);
             })();
+
+            // text scramble for lines and paragraphs
+            (function scrambleTextElements() {
+                const glyphs = "!@#$%^&*()_+-=[]{}|;:,.<>?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+                // target info blocks
+                const targetNodes = document.querySelectorAll('.info-grid p, .info-grid li');
+
+                targetNodes.forEach((node) => {
+                    //preserve HTML tags (e.g -> <strong>)
+                    const textNodes = Array.from(node.childNodes).filter(n => n.nodeType === Node.TEXT_NODE);
+
+                    textNodes.forEach((textNode) => {
+                        const originalText = textNode.textContent;
+                        if (!originalText.trim()) return;
+
+                        let iteration = 0;
+                        const totalSteps = originalText.length;
+
+                        const interval = setInterval(() => {
+                            textNode.textContent = originalText
+                                .split("")
+                                .map((char, idx) => {
+                                    if (char === " " || char === "\n") return char;
+                                    if (idx < iteration) return originalText[idx];
+                                    return glyphs[Math.floor(Math.random() * glyphs.length)];
+                                })
+                                .join("");
+                            
+                            if (iteration >= totalSteps) {
+                                clearInterval(interval);
+                                textNode.textContent = originalText; // ensure full resolution
+                            }
+
+                            iteration += 1 / 2; // adjust speed
+                        }, 30);
+                    });
+
+                });
+            })();
         });
-
-
+       
         const PLANET_PROFILES = {
             "Habitable Candidate": {
                 badgeColor: "#047857",
