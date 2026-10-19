@@ -1062,7 +1062,7 @@
                             let iteration = 0;
                             const totalSteps = originalText.length;
 
-                            const decodeInterval = setinterval(() => {
+                            const decodeInterval = setInterval(() => {
                                 textNode.textContent = originalText
                                     .split("")
                                     .map((char, idx) => {
