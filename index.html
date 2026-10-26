@@ -866,6 +866,33 @@
                     </div>
 
                     <div class="control-group">
+                        <label class="control-label">Core Composition</label>
+                        <select id="core-comp" class="hud-select" onchange="onCompositionChange()">
+                            <option value="ROCKY" selected>Iron / Silicate (Terrestrial)</option>
+                            <option value="OCEAN">Water-Rich / Ocean World</option>
+                            <option value="ICE">Ice Giant Core (H20 / NH3 / CH4)</option>
+                            <option value="GAS">Gas Envelope (Jupiter-like)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Atmospheric Composition</label>
+                        <select id="atmo-comp" class="hud-select" onchange="onCompositionChange()">
+                            <option value="EARTH_LIKE" selected>N₂ / O₂ Rich (Habitable Baseline)</option>
+                            <option value="CO2_DENSE">Dense CO₂ (Greenhouse Runaway)</option>
+                            <option value="METHANE">CH₄ / NH₃ Rich (Reducing Atmosphere)</option>
+                            <option value="THIN">Thin / Rarefied (Mars-like)</option>
+                            <option value="NONE">No Atmosphere (Airless)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Atmospheric Density (bar)</label>
+                        <input type="range" id="atmo-pressure" min="0" max="100" value="1" step="0.1" class="hud-slider" onchange="onCompositionChange()">
+                        <div class="slider-readout"><span id="atmo-pressure-val">1.00</span> bar</div>
+                    </div>
+
+                    <div class="control-group">
                         <label class='control-label'>Camera Presets</label>
                         <div style="display: flex; gap: 8px;">
                             <button class="btn-cam" onclick="setCameraView('overview')">Overview</button>
@@ -1281,6 +1308,51 @@
             if (typeof updateSimulation === 'function') {
                 updateSimulation();
             }  
+        }
+
+        // atmospheric and Core compostion functions
+        function getCompositonModifier() {
+            const core = document.getElementById('core-comp')?.value || 'ROCKY';
+            const atmo = document.getElementById('atmo-comp')?.value || "EARTH_LIKE";
+            const pressure = parseFloat(document.getElementById('atmo-pressure')?.value || 1.0);
+
+            let coreMultiplier = 1.0;
+            if (core === 'ROCKY') coreMultiplier = 1.0;
+            else if (core === 'OCEAN') coreMultiplier = 0.85;
+            else if (core === 'ICE') coreMultiplier = 0.30;
+            else if (core === 'GAS') coreMultiplier = 0.05;
+
+            let atmoMultiplier = 1.0;
+            if (atmo === 'EARTH_LIKE') atmoMultiplier = 1.0;
+            else if (atmo === 'CO2_DENSE') atmoMultiplier = 0.35;
+            else if (atmo === 'METHANE') atmoMultiplier = 0.50;
+            else if (atmo === 'THIN') atmoMultiplier = 0.40;
+            else if (atmo === 'NONE') atmoMultiplier = 0.10;
+
+            let pressureScore = 100;
+            if (pressure < 0.1) pressureScore = 10;
+            else if (pressure < 0.5) pressureScore = 50 + (pressure - 0.1) * 125;
+            else if (pressure <= 3.0) pressureScore = 100;
+            else pressureScore = Math.max(10, 100 - (pressure - 3.0) * 1.5);
+
+            return {
+                coreMultiplier,
+                atmoMultiplier,
+                pressureScore,
+                combinedFactor: coreMultiplier * atmoMultiplier * (pressureScore / 100)
+            };
+        }
+        
+        function onCompositionChange() {
+            const pressureSlider = document.getElementById('atmo-pressure');
+            const pressureVal = document.getElementById('atmo-pressure-val');
+            if (pressureSlider && pressureVal) {
+                pressureVal.textContent = parseFloat(pressureSlider.value).toFixed(2);
+            }
+
+            if (typeof updateSimulation === 'function') {
+                updateSimulation();
+            }
         }
 
         // CHart initalization and updates
