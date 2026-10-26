@@ -1940,9 +1940,15 @@
             //gravity score
             const gravity = mass / (radius * radius);
             const gravityScore = Math.max(0, Math.min(100, 100 - Math.abs(gravity - 1.0) * 30));
+
+            // Composition modifier
+            const comp = (typeof getCompositonModifier === 'function') ? getCompositonModifier() : { combinedFactor: 1.0 };
+            const finalTempScore = Math.round(tempScore * comp.combinedFactor);
+            const finalGravScore = Math.round(gravityScore * comp.combinedFactor);
+
             //update the index breakdown
             if (typeof updateHabitabilityUI === 'function') {
-                updateHabitabilityUI(Math.round(tempScore), Math.round(gravityScore));
+                updateHabitabilityUI(finalTempScore, finalGravScore);
             }
 
         }
