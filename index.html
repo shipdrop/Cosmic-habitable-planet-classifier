@@ -714,6 +714,25 @@
             transition: width 0.5s ease-out, background-color 0.5s ease-out;
         }
 
+        .hud-select {
+            width: 100%;
+            background: rgba(10, 20, 30, 0.85);
+            color: #00f0ff;
+            border: 1px solid #00f0ff;
+            padding: 8px 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+        }
+
+        .hud-select option {
+            background: #0a141e;
+            color: #00f0ff;
+        }
+
 
 
     </style>
@@ -833,6 +852,17 @@
                     <div class="control-group">
                         <label class="control-label">Stellar Temp (Kelvin) <span id="temp-val">5800</span></label>
                         <input type="range" id="star-temp" min="2000" max="10000" step="100" value="5800" autocomplete="off" data-form-type="other" oninput="updateSimulation()">
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Host Star Type</label>
+                        <select id="star-type" class="hud-select" onchange="updateStarType()">
+                            <option value="M">M-Dwarf (Red Dwarf) - Low Flux</option>
+                            <option value="G" selected> G-Type (Yellow Dwarf - Sun-Like)</option>
+                            <option value="F">F-Type (White Main-Sequence)</option>
+                            <option value="A">A-Type (Blue-White Star)</option>
+                            <option value="PULSAR">Neutron Star / Pulsar</option>
+                        </select>
                     </div>
 
                     <div class="control-group">
@@ -1199,6 +1229,61 @@
             }
 
             playUISound(profile.soundtype);
+        }
+
+        // Star profiles and functions
+        const STAR_Types = {
+            M: { color: 0xff3300, glowColor: 0xff4400, scale: 0.6, temp: 3000, lightIntensity: 1.2, orbitRadius: 8 },
+            G: { color: 0xffaa00, glowColor: 0xffcc00, scale: 1.0, temp: 5800, lightIntensity: 2.5, orbitRadius: 18 },
+            F: { color: 0xf8f5ec, glowColor: 0xffffff, scale: 1.4, temp: 7200, lightIntensity: 4.0, orbitRadius: 28 },
+            A: { color: 0x9bb0ff, glowColor: 0xaaccff, scale: 1.9, temp: 9500, lightIntensity: 6.0, orbitRadius: 38 },
+            PULSAR: { color: 0x00f0ff, glowColor: 0x0088ff, scale: 0.3, temp: 100000, lightIntensity: 8.0, orbitRadius: 14 }
+        };
+
+        function updateStarType() {
+            const starSelect = document.getElementById('star-type');
+            const selectedType = starSelect.value;
+            const profile = STAR_Types[selectedType];
+
+            if (!profile) return;
+
+            // Update Star temp value automatically
+            const tempSlider = document.getElementById('star-temp');
+            const tempVal = document.getElementById('temp-val');
+            if (tempSlider && tempVal) {
+                tempSlider.value = profile.temp;
+                tempVal.textContent = profile.temp;
+            }
+
+            // smoothly transition star mesh and scale using GSAP (which I hate)
+            if (starMesh) {
+                if (typeof gsap !== 'undefined') {
+                    gsap.to(starMesh.scale, { x: profile.scale, y: profile.scale, z: profile.scale, duration: 1 });
+                    gsap.to(starMesh.material.color, {
+                        r: ((profile.color >> 16) & 255) / 255,
+                        g: ((profile.color >> 8) & 255) / 255,
+                        b: (profile.color & 255) / 255,
+                        duration: 1
+                    });
+                } else {
+                    starMesh.scale.set(profile.scale, profile.scale, profile.scale);
+                    starMesh.material.color.setHex(profile.color);
+                }
+            }
+
+            // adjust Light Intensity and Color
+            if (pointLight) {
+                pointLight.color.setHex(profile.color);
+                pointLight.intensity = profile.lightIntensity;
+            }
+
+            // shift planet orbit radius to match the new habitable zone shift
+            orbitRadius = profile.orbitRadius;
+
+            // trigger simulation update
+            if (typeof updateSimulation === 'function') {
+                updateSimulation();
+            }  
         }
 
         // CHart initalization and updates
