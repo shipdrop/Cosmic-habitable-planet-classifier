@@ -1932,10 +1932,12 @@
 
                 //smooth color transition
                 starMesh.material.color.lerp(targetStarColor, 0.2);
-                if (starGlowMesh) {
-                    starGlowMesh.material.color.value.lerp(targetStarColor, 0.2);
+                if (typeof starGlowMesh !== 'undefined' && starGlowMesh && starGlowMesh.material.uniforms) {
+                    starGlowMesh.material.uniforms.color.value.lerp(targetStarColor, 0.2);
                 }
-                pointLight.color.lerp(targetStarColor, 0.2);
+                if (typeof pointLight !== 'undefined' && pointLight) {
+                    pointLight.color.lerp(targetStarColor, 0.2);
+                }
                 planetMesh.material.color.lerp(targetPlanetColor, 0.2);
             }
 
