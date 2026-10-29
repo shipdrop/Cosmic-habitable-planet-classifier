@@ -899,7 +899,7 @@
 
                     <div class="control-group">
                         <label class="control-label">Core Composition</label>
-                        <select id="core-comp" class="hud-select" onchange="onCompositionChange()">
+                        <select id="core-comp" class="hud-select" onchange="updateSimulation()">
                             <option value="ROCKY" selected>Iron / Silicate (Terrestrial)</option>
                             <option value="OCEAN">Water-Rich / Ocean World</option>
                             <option value="ICE">Ice Giant Core (H20 / NH3 / CH4)</option>
@@ -1885,26 +1885,34 @@
             const period = parseFloat(document.getElementById('period').value);
             const temp = parseFloat(document.getElementById('star-temp').value);
 
-        
+            // read composition and pressure inputs
+            const core = document.getElementById('core-comp')?.value || 'ROCKY';
+            const atmo = document.getElementById('atmo-comp')?.value || 'EARTH_LIKE';
+            const pressure = parseFloat(document.getElementById('atmo-pressure')?.value || 1.0);
+            
+            // Update slider text readouts
             document.getElementById('mass-val').innerText = mass.toFixed(1);
-            document.getElementById('radius-val').innerText = radius.toFixed(1);
-            document.getElementById('period-val').innerText = period.toFixed(0);
-            document.getElementById('temp-val').innerText = temp.toFixed(0);
+            document.getElementById('radius-val').innerText = mass.toFixed(1);
+            document.getElementById('period-val').innerText = mass.toFixed(0);
+            document.getElementById('temp-val').innerText = mass.toFixed(0);
 
-            // update right summary panel cards
+            const pressureVal = document.getElementById('atmo-pressure-val');
+            if (pressureVal) pressureVal.innerText = pressure.toFixed(2);
+
+            //update right summary panel
             const metricMass = document.getElementById('metric-mass');
             const metricOrbit = document.getElementById('metric-orbit');
 
             if (metricMass) metricMass.innerText = `${mass.toFixed(1)} M⊕`;
             if (metricOrbit) metricOrbit.innerText = `${period.toFixed(0)} Days`;
-
+            
             if (planetMesh) {
                 planetMesh.scale.setScalar(radius);
             }
 
-            orbitSpeed = (1/ period) * 1.5;
+            orbitSpeed = (1 / period) * 1.5;
 
-               // update chart point
+            // update chartpoint
             updateChartPoint(period, mass);
 
             if (starMesh && planetMesh) {
@@ -1912,7 +1920,7 @@
                 let targetPlanetColor = new THREE.Color();
 
                 if (temp < 4000) {
-                    targetStarColor.setHex(0xff3300);
+                    targetStarColor.setHex(0xff3300)
                     targetPlanetColor.setHex(0xef4444);
                 } else if (temp < 7000) {
                     targetStarColor.setHex(0xffdd66);
@@ -1922,35 +1930,60 @@
                     targetPlanetColor.setHex(0x00f0ff);
                 }
 
-                // Smooth color Transition
+                //smooth color transition
                 starMesh.material.color.lerp(targetStarColor, 0.2);
                 if (starGlowMesh) {
-                    starGlowMesh.material.uniforms.color.value.lerp(targetStarColor, 0.2);
+                    starGlowMesh.material.color.value.lerp(targetStarColor, 0.2);
                 }
                 pointLight.color.lerp(targetStarColor, 0.2);
                 planetMesh.material.color.lerp(targetPlanetColor, 0.2);
             }
 
-            // update the goldilocks zone
+            // update goldilocks zone
             if (typeof updateHabitableZoneOV === 'function' && typeof scene !== 'undefined') {
-                updateHabitableZoneOV(scene, temp);
+                updateHabitableZoneOV(scene, temp)
             }
 
+            // base scores 
             const tempScore = Math.max(0, Math.min(100, 100 - Math.abs(temp - 5800) / 40));
-            //gravity score
             const gravity = mass / (radius * radius);
             const gravityScore = Math.max(0, Math.min(100, 100 - Math.abs(gravity - 1.0) * 30));
 
-            // Composition modifier
-            const comp = (typeof getCompositonModifier === 'function') ? getCompositonModifier() : { combinedFactor: 1.0 };
-            const finalTempScore = Math.round(tempScore * comp.combinedFactor);
-            const finalGravScore = Math.round(gravityScore * comp.combinedFactor);
+            // composition modifier integration
+            const comp = (typeof getCompositionModifier === 'function') ? getCompositionModifier() : { combinedFactor: 1.0 };
 
-            //update the index breakdown
-            if (typeof updateHabitabilityUI === 'function') {
-                updateHabitabilityUI(finalTempScore, finalGravScore);
+            let finalTempScore = Math.round(tempScore * comp.combinedFactor);
+            let finalGravScore = Math.round(gravityScore * comp.combinedFactor);
+
+            //dynamic classification & hard overrides 
+            let classification = "Habitable Candidate";
+
+            if (core === 'GAS') {
+                finalGravScore = 0;
+                finalTempScore = 0;
+                classification = "Gas Giant / Sub-Neptune";    
+            } else if (core === 'ICE') {
+                finalGravScore = Math.round(gravityScore * 0.3);
+                finalTempScore = 0;
+                classification = "Neptunian / Ice Giant";
+            } else if (temp > 7000) {
+                classification = "Non-Habitable (Too Hot)";
+            } else if (mass > 5.0) {
+                classification = "Super Earth";
+            } else if (atmo === "NONE") {
+                finalTempScore = 0;
+                finalGravScore = Math.round(gravityScore * 0.2);
+                classification = "Terrestrial / Rocky"
             }
 
+            // apply the profile styles and text instantly 
+            if (typeof applySummaryProfile === 'function') {
+                applySummaryProfile(classification);
+            }
+
+            if (typeof updateHabitabilityUI === 'function') {
+                updateHabitabilityUI(finalGravScore, finalTempScore);
+            }
         }
 
         function animate() {
