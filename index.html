@@ -1957,32 +1957,6 @@
             let finalTempScore = Math.round(tempScore * comp.combinedFactor);
             let finalGravScore = Math.round(gravityScore * comp.combinedFactor);
 
-            //dynamic classification & hard overrides 
-            let classification = "Habitable Candidate";
-
-            if (core === 'GAS') {
-                finalGravScore = 0;
-                finalTempScore = 0;
-                classification = "Gas Giant / Sub-Neptune";    
-            } else if (core === 'ICE') {
-                finalGravScore = Math.round(gravityScore * 0.3);
-                finalTempScore = 0;
-                classification = "Neptunian / Ice Giant";
-            } else if (temp > 7000) {
-                classification = "Non-Habitable (Too Hot)";
-            } else if (mass > 5.0) {
-                classification = "Super Earth";
-            } else if (atmo === "NONE") {
-                finalTempScore = 0;
-                finalGravScore = Math.round(gravityScore * 0.2);
-                classification = "Terrestrial / Rocky"
-            }
-
-            // apply the profile styles and text instantly 
-            if (typeof applySummaryProfile === 'function') {
-                applySummaryProfile(classification);
-            }
-
             if (typeof updateHabitabilityUI === 'function') {
                 updateHabitabilityUI(finalGravScore, finalTempScore);
             }
