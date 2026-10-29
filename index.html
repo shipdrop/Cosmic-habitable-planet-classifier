@@ -1809,24 +1809,16 @@
         }
 
         function updateSimulation() {
-            const mass = parseFloat(document.getElementById('mass')?.value || 1.0);
-            const radius = parseFloat(document.getElementById('radius')?.value || 1.0);
-            const period = parseFloat(document.getElementById('period')?.value || 365.25);
-            const temp = parseFloat(document.getElementById('star-temp')?.value || 5778);
+            const mass = parseFloat(document.getElementById('mass').value);
+            const radius = parseFloat(document.getElementById('radius').value);
+            const period = parseFloat(document.getElementById('period').value);
+            const temp = parseFloat(document.getElementById('star-temp').value);
 
-            // read composition and pressure inputs
-            const core = document.getElementById('core-comp')?.value || 'ROCKY';
-            const atmo = document.getElementById('atmo-comp')?.value || 'EARTH_LIKE';
-            const pressure = parseFloat(document.getElementById('atmo-pressure')?.value || 1.0);
-            
             // Update slider text readouts
             document.getElementById('mass-val').innerText = mass.toFixed(1);
-            document.getElementById('radius-val').innerText = mass.toFixed(1);
-            document.getElementById('period-val').innerText = mass.toFixed(0);
-            document.getElementById('temp-val').innerText = mass.toFixed(0);
-
-            const pressureVal = document.getElementById('atmo-pressure-val');
-            if (pressureVal) pressureVal.innerText = pressure.toFixed(2);
+            document.getElementById('radius-val').innerText = radius.toFixed(1);
+            document.getElementById('period-val').innerText = period.toFixed(0);
+            document.getElementById('temp-val').innerText = temp.toFixed(0);
 
             //update right summary panel
             const metricMass = document.getElementById('metric-mass');
@@ -1835,7 +1827,7 @@
             if (metricMass) metricMass.innerText = `${mass.toFixed(1)} M⊕`;
             if (metricOrbit) metricOrbit.innerText = `${period.toFixed(0)} Days`;
             
-            if (planetMesh) {
+            if (typeof planetMesh !== 'undefined' && planetMesh) {
                 planetMesh.scale.setScalar(radius);
             }
 
