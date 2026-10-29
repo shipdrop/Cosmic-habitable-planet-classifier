@@ -1886,11 +1886,6 @@
             let finalTempScore = Math.round(tempScore * comp.combinedFactor);
             let finalGravScore = Math.round(gravityScore * comp.combinedFactor);
 
-            // apply the profile styles and text instantly 
-            if (typeof applySummaryProfile === 'function') {
-                applySummaryProfile(classification);
-            }
-
             if (typeof updateHabitabilityUI === 'function') {
                 updateHabitabilityUI(finalGravScore, finalTempScore);
             }
